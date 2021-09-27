@@ -1,8 +1,10 @@
 extends Node
 
+
 var network = NetworkedMultiplayerENet.new()
 var port = 1909
 var max_players = 100
+
 
 func _ready():
 	start_server()
@@ -19,8 +21,11 @@ func start_server():
 
 func _peer_connected(player_id):
 	print("Player with id: " + str(player_id)+ " connected.")
-	
+	#temporarily instantly spawning a player
+	rpc_id(player_id,"spawn_player")
 
 
 func _peer_disconnected(player_id):
 	print("Player with id: " + str(player_id)+ " disconnected.")
+
+
