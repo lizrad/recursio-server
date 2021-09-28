@@ -41,7 +41,7 @@ func _find_next_spawn_point():
 
 func update_player_state(player_id,player_state):
 	if player_states.has(player_id):
-		if player_states[player_id]["T"]<player_state["T"]:
+		if player_states[player_id]["T"]<player_state["T"] && player_state["T"]-Server.get_server_time()<25:
 			player_states[player_id]=player_state
 	else:
 		player_states[player_id]=player_state
@@ -49,6 +49,5 @@ func update_player_state(player_id,player_state):
 func _physics_process(delta):
 	for player_id in player_states:
 		if players.has(player_id):
-			#TODO: Validate received states before applying them
 			players[player_id].apply_player_state(player_states[player_id], delta)
 	
