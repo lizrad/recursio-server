@@ -50,8 +50,5 @@ func _physics_process(delta):
 	for player_id in player_states:
 		if players.has(player_id):
 			#TODO: Validate received states before applying them
-			var goal_position = player_states[player_id]["P"]
-			var current_position = players[player_id].transform.origin
-			var velocity = (goal_position-current_position)/delta
-			players[player_id].move_and_slide(velocity)
+			players[player_id].apply_player_state(player_states[player_id], delta)
 	
