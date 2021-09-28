@@ -29,6 +29,7 @@ func create_room(room_name : String) -> void :
 func delete_room(room_id : int) -> void:
 	if _room_dic.has(room_id):
 		_room_dic[room_id].queue_free()
+		_room_dic.erase(room_id)
 
 
 func join_room(room_id : int, player_id : int) -> void:
@@ -43,6 +44,9 @@ func leave_room(room_id : int, player_id : int) -> void:
 		if _room_dic[room_id].player_manager.players.size() == 0:
 			delete_room(room_id)
 
+
+func get_room(room_id : int) -> Room:
+	return _room_dic[room_id]
 
 func _on_world_state_update(world_state, room_id) -> void:
 	_server.send_world_state(world_state)

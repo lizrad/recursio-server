@@ -64,4 +64,5 @@ remote func fetch_server_time(player_time):
 
 remote func receive_player_state(player_state):
 	var player_id = get_tree().get_rpc_sender_id()
-	_player_room_dic[player_id].player_manager.update_player_state(player_id, player_state)
+	var room_id = _player_room_dic[player_id]
+	_room_manager.get_room(room_id).player_manager.update_player_state(player_id, player_state)
