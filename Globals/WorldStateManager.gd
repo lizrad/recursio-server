@@ -26,7 +26,7 @@ func define_world_state():
 	var time = Server.get_server_time()
 	var player_states={}
 	for player_id in PlayerManager.player_states:
-		player_states[player_id]=PlayerManager.player_states[player_id]["P"]
+		player_states[player_id]=PlayerManager.player_states[player_id]
 	var world_state = {}
 	
 	world_state["T"] = time
