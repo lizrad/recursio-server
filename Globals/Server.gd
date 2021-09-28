@@ -24,20 +24,20 @@ func start_server():
 
 func _peer_connected(player_id):
 	print("Player with id: " + str(player_id)+ " connected.")
-	player_amount+=1
+	player_amount += 1
 	
-	if _room_manager.has_room:
-		_room_manager.join_room(1, player_id)
-	else:
+	if _room_manager.is_current_room_full():
 		_room_manager.create_room("Room 1")
-		_room_manager.join_room(1, player_id)
+		_room_manager.join_room(_room_manager.room_count, player_id)
+	else:
+		_room_manager.join_room(_room_manager.room_count, player_id)
 	
-	_player_room_dic[player_id] = 1
+	_player_room_dic[player_id] = _room_manager.room_count
 
 func _peer_disconnected(player_id):
 	print("Player with id: " + str(player_id)+ " disconnected.")
 	_room_manager.leave_room(_player_room_dic[player_id], player_id)
-	player_amount-=1
+	player_amount -= 1
 
 func spawn_player_on_client(player_id, spawn_point):
 	rpc_id(player_id,"spawn_player", player_id, spawn_point)
