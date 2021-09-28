@@ -11,7 +11,7 @@ var _room_dic : Dictionary = {}
 onready var _server = get_node("/root/Server")
 
 
-func create_room(room_name : String) -> void :
+func create_room(room_name : String) -> int :
 	var room : Room = _room_scene.instance()
 	room.set_name(str(_room_id_counter))
 	room.room_name = room_name
@@ -23,6 +23,8 @@ func create_room(room_name : String) -> void :
 	_room_dic[_room_id_counter] = room
 	_room_id_counter += 1
 	room_count += 1
+	
+	return room.id
 
 func delete_room(room_id : int) -> void:
 	if _room_dic.has(room_id):
@@ -48,6 +50,9 @@ func leave_room(room_id : int, player_id : int) -> void:
 
 func get_room(room_id : int) -> Room:
 	return _room_dic[room_id]
+
+func get_current_room_id() -> int:
+	return _room_dic[_room_id_counter - 1].id
 
 
 func is_current_room_full() -> bool:
