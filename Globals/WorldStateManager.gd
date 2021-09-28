@@ -37,7 +37,6 @@ func define_world_state():
 		player_states[player_id]["A"]=_player_manager.players[player_id].acceleration
 		player_states[player_id]["R"]=_player_manager.players[player_id].rotation.y
 		player_states[player_id]["H"]=_player_manager.players[player_id].rotation_velocity
-		print(player_states[player_id])
 		
 	var world_state = {}
 	
