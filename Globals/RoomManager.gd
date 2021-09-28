@@ -22,7 +22,7 @@ func create_room(room_name : String) -> void :
 	room.world_state_manager.connect("on_world_state_update", self, "_on_world_state_update", [_room_id_counter])
 
 	_room_dic[_room_id_counter] = room
-	_room_id_counter += 1
+	#_room_id_counter += 1
 	has_room = true
 
 
@@ -30,6 +30,9 @@ func delete_room(room_id : int) -> void:
 	if _room_dic.has(room_id):
 		_room_dic[room_id].queue_free()
 		_room_dic.erase(room_id)
+	
+	if _room_dic.size() == 0:
+		has_room = false
 
 
 func join_room(room_id : int, player_id : int) -> void:
