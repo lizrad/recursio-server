@@ -27,16 +27,19 @@ func _peer_connected(player_id):
 	player_amount += 1
 	
 	if _room_manager.is_current_room_full():
-		_room_manager.create_room("Room 1")
-		_room_manager.join_room(_room_manager.room_count, player_id)
+		var room_id = _room_manager.create_room("Room 1")
+		_room_manager.join_room(room_id, player_id)
+		_player_room_dic[player_id] = room_id
 	else:
-		_room_manager.join_room(_room_manager.room_count, player_id)
-	
-	_player_room_dic[player_id] = _room_manager.room_count
+		var room_id = _room_manager.get_current_room_id()
+		_room_manager.join_room(room_id, player_id)
+		_player_room_dic[player_id] = room_id
+
 
 func _peer_disconnected(player_id):
 	print("Player with id: " + str(player_id)+ " disconnected.")
 	_room_manager.leave_room(_player_room_dic[player_id], player_id)
+	_player_room_dic.erase(player_id)
 	player_amount -= 1
 
 func spawn_player_on_client(player_id, spawn_point):
@@ -48,8 +51,8 @@ func spawn_enemy_on_client(player_id, enemy_id, enemy_position):
 func despawn_enemy_on_client(player_id, enemy_id):
 	rpc_id(player_id,"despawn_enemy",enemy_id)
 
-func send_world_state(world_state):
-	rpc_unreliable_id(0,"receive_world_state",world_state)
+func send_world_state(world_state, player_id):
+	rpc_unreliable_id(player_id,"receive_world_state", world_state)
 
 func get_server_time():
 	return OS.get_system_time_msecs()
@@ -65,4 +68,4 @@ remote func fetch_server_time(player_time):
 remote func receive_player_state(player_state):
 	var player_id = get_tree().get_rpc_sender_id()
 	var room_id = _player_room_dic[player_id]
-	_room_manager.get_room(room_id).player_manager.update_player_state(player_id, player_state)
+	_room_manager.get_room(room_id).update_player_state(player_id, player_state)

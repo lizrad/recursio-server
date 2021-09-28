@@ -1,7 +1,7 @@
 extends Node
 class_name WorldStateManager
 
-signal on_world_state_update(world_state)
+signal world_state_updated(world_state)
 
 onready var _server = get_node("/root/Server")
 onready var _player_manager = get_node("../PlayerManager")
@@ -23,15 +23,19 @@ onready var _player_manager = get_node("../PlayerManager")
 #
 
 func _physics_process(delta):
-	if _server.player_amount > 0:
+	if _player_manager.players.size() >= 2:
 		var world_state = define_world_state()
-		_server.send_world_state(world_state)
+		emit_signal("world_state_updated", world_state)
 
 func define_world_state():
 	var time = _server.get_server_time()
 	var player_states={}
 	for player_id in _player_manager.players:
+		if not _player_manager.player_states.has(player_id):
+			# We're trying to send a world state with this player before a player state has arrived
+			continue
 		player_states[player_id]={}
+		player_states[player_id]["T"]=_player_manager.player_states[player_id]["T"]
 		player_states[player_id]["P"]=_player_manager.players[player_id].transform.origin
 		player_states[player_id]["V"]=_player_manager.players[player_id].velocity
 		player_states[player_id]["A"]=_player_manager.players[player_id].acceleration
