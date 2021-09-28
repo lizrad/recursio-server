@@ -1,7 +1,8 @@
 extends Node
 class_name GameManager
 
-onready var _room : Room = get_node("..")
+onready var _room: Room = get_node("..")
+
 
 func _ready():
 	_room.connect("room_filled", self, "_on_room_filled")
