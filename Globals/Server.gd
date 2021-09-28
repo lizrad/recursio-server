@@ -1,9 +1,14 @@
 extends Node
+class_name Server
 
 var network = NetworkedMultiplayerENet.new()
 var port = 1909
 var max_players = 100
 var player_amount = 0
+
+onready var _room_manager = get_node("RoomManager")
+
+var _player_room_dic : Dictionary = {}
 
 func _ready():
 	start_server()
@@ -19,13 +24,19 @@ func start_server():
 
 func _peer_connected(player_id):
 	print("Player with id: " + str(player_id)+ " connected.")
-	#temporarily instantly spawning a player
-	PlayerManager.spawn_player(player_id)
 	player_amount+=1
+	
+	if _room_manager.has_room:
+		_room_manager.join_room(1, player_id)
+	else:
+		_room_manager.create_room("Room 1")
+		_room_manager.join_room(1, player_id)
+	
+	_player_room_dic[player_id] = 1
 
 func _peer_disconnected(player_id):
 	print("Player with id: " + str(player_id)+ " disconnected.")
-	PlayerManager.despawn_player(player_id)
+	_room_manager.leave_room(_player_room_dic[player_id], player_id)
 	player_amount-=1
 
 func spawn_player_on_client(player_id, spawn_point):
@@ -53,5 +64,4 @@ remote func fetch_server_time(player_time):
 
 remote func receive_player_state(player_state):
 	var player_id = get_tree().get_rpc_sender_id()
-	PlayerManager.update_player_state(player_id,player_state)
-
+	_player_room_dic[player_id].player_manager.update_player_state(player_id, player_state)

@@ -8,16 +8,45 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Node",
+"class": "PlayerManager",
+"language": "GDScript",
+"path": "res://Globals/PlayerManager.gd"
+}, {
+"base": "Viewport",
+"class": "Room",
+"language": "GDScript",
+"path": "res://Room.gd"
+}, {
+"base": "Node",
+"class": "RoomManager",
+"language": "GDScript",
+"path": "res://Globals/RoomManager.gd"
+}, {
+"base": "Node",
+"class": "Server",
+"language": "GDScript",
+"path": "res://Globals/Server.gd"
+}, {
+"base": "Node",
+"class": "WorldStateManager",
+"language": "GDScript",
+"path": "res://Globals/WorldStateManager.gd"
+} ]
+_global_script_class_icons={
+"PlayerManager": "",
+"Room": "",
+"RoomManager": "",
+"Server": "",
+"WorldStateManager": ""
+}
+
 [application]
 
 config/name="recursio-server"
 run/main_scene="res://Globals/Server.tscn"
 config/icon="res://icon.png"
-
-[autoload]
-
-PlayerManager="*res://Globals/PlayerManager.gd"
-WorldStateManager="*res://Globals/WorldStateManager.gd"
 
 [physics]
 

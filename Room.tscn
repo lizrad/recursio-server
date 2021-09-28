@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Globals/WorldStateManager.gd" type="Script" id=1]
+[ext_resource path="res://Globals/PlayerManager.gd" type="Script" id=2]
+[ext_resource path="res://Room.gd" type="Script" id=3]
+
+[sub_resource type="World" id=1]
+
+[node name="Room" type="Viewport"]
+size = Vector2( 1920, 1080 )
+own_world = true
+world = SubResource( 1 )
+script = ExtResource( 3 )
+
+[node name="PlayerManager" type="Node" parent="."]
+script = ExtResource( 2 )
+
+[node name="WorldStateManager" type="Node" parent="."]
+script = ExtResource( 1 )

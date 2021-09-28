@@ -1,5 +1,10 @@
 extends Node
-onready var Server = get_node("/root/Server")
+class_name WorldStateManager
+
+signal on_world_state_update(world_state)
+
+onready var _server = get_node("/root/Server")
+onready var _player_manager = get_node("../PlayerManager")
 
 #
 # World States are structured like this:
@@ -18,16 +23,15 @@ onready var Server = get_node("/root/Server")
 #
 
 func _physics_process(delta):
-	if Server.player_amount > 0:
+	if _server.player_amount > 0:
 		var world_state = define_world_state()
-		Server.send_world_state(world_state)
+		_server.send_world_state(world_state)
 
 func define_world_state():
-	var time = Server.get_server_time()
+	var time = _server.get_server_time()
 	var player_states = {}
-	
-	for player_id in PlayerManager.player_states:
-		player_states[player_id] = PlayerManager.player_states[player_id]
+	for player_id in _player_manager.player_states:
+		player_states[player_id] = _player_manager.player_states[player_id]
 	
 	var world_state = {}
 	
