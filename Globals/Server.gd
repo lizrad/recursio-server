@@ -1,6 +1,5 @@
 extends Node
 
-
 var network = NetworkedMultiplayerENet.new()
 var port = 1909
 var max_players = 100
@@ -8,7 +7,6 @@ var player_amount = 0
 
 func _ready():
 	start_server()
-
 
 func start_server():
 	network.create_server(port, max_players)
@@ -39,13 +37,21 @@ func spawn_enemy_on_client(player_id, enemy_id, enemy_position):
 func despawn_enemy_on_client(player_id, enemy_id):
 	rpc_id(player_id,"despawn_enemy",enemy_id)
 
+func send_world_state(world_state):
+	rpc_unreliable_id(0,"receive_world_state",world_state)
+
+func get_server_time():
+	return OS.get_system_time_msecs()
+
+remote func determine_latency(player_time):
+		var player_id = get_tree().get_rpc_sender_id()
+		rpc_id(player_id, "receive_latency", player_time)
+
+remote func fetch_server_time(player_time):
+	var player_id = get_tree().get_rpc_sender_id()
+	rpc_id(player_id, "receive_server_time", OS.get_system_time_msecs(), player_time)
 
 remote func receive_player_state(player_state):
 	var player_id = get_tree().get_rpc_sender_id()
 	PlayerManager.update_player_state(player_id,player_state)
 
-func send_world_state(world_state):
-	rpc_unreliable_id(0,"receive_world_state",world_state)
-	
-func get_server_time():
-	return OS.get_system_time_msecs()
