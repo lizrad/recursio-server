@@ -48,8 +48,8 @@ func spawn_enemy_on_client(player_id, enemy_id, enemy_position):
 func despawn_enemy_on_client(player_id, enemy_id):
 	rpc_id(player_id,"despawn_enemy",enemy_id)
 
-func send_world_state(world_state):
-	rpc_unreliable_id(0,"receive_world_state",world_state)
+func send_world_state(world_state, player_id):
+	rpc_unreliable_id(player_id,"receive_world_state", world_state)
 
 func get_server_time():
 	return OS.get_system_time_msecs()
@@ -65,4 +65,4 @@ remote func fetch_server_time(player_time):
 remote func receive_player_state(player_state):
 	var player_id = get_tree().get_rpc_sender_id()
 	var room_id = _player_room_dic[player_id]
-	_room_manager.get_room(room_id).player_manager.update_player_state(player_id, player_state)
+	_room_manager.get_room(room_id).update_player_state(player_id, player_state)

@@ -1,7 +1,7 @@
 extends Node
 class_name WorldStateManager
 
-signal on_world_state_update(world_state)
+signal world_state_updated(world_state)
 
 onready var _server = get_node("/root/Server")
 onready var _player_manager = get_node("../PlayerManager")
@@ -23,9 +23,9 @@ onready var _player_manager = get_node("../PlayerManager")
 #
 
 func _physics_process(delta):
-	if _server.player_amount > 0:
+	if _player_manager.players.size() >= 2:
 		var world_state = define_world_state()
-		_server.send_world_state(world_state)
+		emit_signal("world_state_updated", world_state)
 
 func define_world_state():
 	var time = _server.get_server_time()

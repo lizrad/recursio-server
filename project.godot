@@ -10,19 +10,24 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Node",
+"class": "GameManager",
+"language": "GDScript",
+"path": "res://Room/GameManager.gd"
+}, {
+"base": "Node",
 "class": "PlayerManager",
 "language": "GDScript",
-"path": "res://Globals/PlayerManager.gd"
+"path": "res://Room/PlayerManager.gd"
 }, {
 "base": "Viewport",
 "class": "Room",
 "language": "GDScript",
-"path": "res://Room.gd"
+"path": "res://Room/Room.gd"
 }, {
 "base": "Node",
 "class": "RoomManager",
 "language": "GDScript",
-"path": "res://Globals/RoomManager.gd"
+"path": "res://Room/RoomManager.gd"
 }, {
 "base": "Node",
 "class": "Server",
@@ -32,9 +37,10 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "WorldStateManager",
 "language": "GDScript",
-"path": "res://Globals/WorldStateManager.gd"
+"path": "res://Room/WorldStateManager.gd"
 } ]
 _global_script_class_icons={
+"GameManager": "",
 "PlayerManager": "",
 "Room": "",
 "RoomManager": "",
