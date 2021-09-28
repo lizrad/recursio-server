@@ -25,8 +25,8 @@ func _physics_process(delta):
 func define_world_state():
 	var time = Server.get_server_time()
 	var player_states={}
-	for player_id in PlayerManager.players:
-		player_states[player_id]=PlayerManager.players[player_id].transform.origin
+	for player_id in PlayerManager.player_states:
+		player_states[player_id]=PlayerManager.player_states[player_id]["P"]
 	var world_state = {}
 	
 	world_state["T"] = time
