@@ -30,13 +30,13 @@ func _physics_process(delta):
 func define_world_state():
 	var time = _server.get_server_time()
 	var player_states={}
-	for player_id in PlayerManager.players:
+	for player_id in _player_manager.players:
 		player_states[player_id]={}
-		player_states[player_id]["P"]=PlayerManager.players[player_id].transform.origin
-		player_states[player_id]["V"]=PlayerManager.players[player_id].velocity
-		player_states[player_id]["A"]=PlayerManager.players[player_id].acceleration
-		player_states[player_id]["R"]=PlayerManager.players[player_id].rotation.y
-		player_states[player_id]["H"]=PlayerManager.players[player_id].rotation_velocity
+		player_states[player_id]["P"]=_player_manager.players[player_id].transform.origin
+		player_states[player_id]["V"]=_player_manager.players[player_id].velocity
+		player_states[player_id]["A"]=_player_manager.players[player_id].acceleration
+		player_states[player_id]["R"]=_player_manager.players[player_id].rotation.y
+		player_states[player_id]["H"]=_player_manager.players[player_id].rotation_velocity
 		print(player_states[player_id])
 		
 	var world_state = {}
