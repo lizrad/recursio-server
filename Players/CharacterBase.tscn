@@ -14,3 +14,6 @@ shape = SubResource( 1 )
 [node name="DashConfirmationTimer" type="Timer" parent="."]
 wait_time = 0.5
 one_shot = true
+
+[node name="DashActivationTimer" type="Timer" parent="."]
+one_shot = true
