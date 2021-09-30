@@ -68,7 +68,6 @@ func apply_player_state(player_state, physics_delta):
 	last_player_state = player_state
 
 func update_dash_state(dash_state):
-	#TODO: validate if dash is possible
 	if dash_state["S"]==1:
 		if(dash_charges>0):
 			dash_charges-=1
