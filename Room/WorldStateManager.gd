@@ -36,6 +36,7 @@ func define_world_state():
 		if not _player_manager.player_states.has(player_id):
 			# We're trying to send a world state with this player before a player state has arrived
 			continue
+		_player_manager.players[player_id].correct_illegal_movement()
 		player_states[player_id] = {}
 		player_states[player_id]["T"] = _player_manager.player_states[player_id]["T"]
 		player_states[player_id]["P"] = _player_manager.players[player_id].transform.origin
