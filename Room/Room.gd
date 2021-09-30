@@ -29,6 +29,8 @@ func remove_player(player_id: int) -> void:
 func update_player_state(player_id, player_state):
 	_player_manager.update_player_state(player_id, player_state)
 
+func update_dash_state(player_id, dash_state):
+	_player_manager.update_dash_state(player_id,dash_state)
 
 func get_players():
 	return _player_manager.players
