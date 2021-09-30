@@ -54,6 +54,10 @@ config/name="recursio-server"
 run/main_scene="res://Globals/Server.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Logger="*res://Globals/Logger.gd"
+
 [physics]
 
 common/physics_fps=30

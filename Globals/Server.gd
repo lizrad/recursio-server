@@ -18,14 +18,16 @@ func _ready():
 func start_server():
 	network.create_server(port, max_players)
 	get_tree().set_network_peer(network)
-	print("Server started")
+	
+	Logger.info("Server started", "connection")
 
 	network.connect("peer_connected", self, "_peer_connected")
 	network.connect("peer_disconnected", self, "_peer_disconnected")
 
 
 func _peer_connected(player_id):
-	print("Player with id: " + str(player_id) + " connected.")
+	Logger.info("Player with id: " + str(player_id) + " connected.", "connection")
+	
 	player_amount += 1
 
 	if _room_manager.is_current_room_full():
@@ -39,7 +41,8 @@ func _peer_connected(player_id):
 
 
 func _peer_disconnected(player_id):
-	print("Player with id: " + str(player_id) + " disconnected.")
+	Logger.info("Player with id: " + str(player_id) + " disconnected.", "connection")
+	
 	_room_manager.leave_room(_player_room_dic[player_id], player_id)
 	_player_room_dic.erase(player_id)
 	player_amount -= 1
