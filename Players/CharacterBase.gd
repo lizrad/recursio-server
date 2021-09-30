@@ -3,12 +3,15 @@ extends KinematicBody
 onready var Server = get_node("/root/Server")
 onready var dash_confirmation_timer = get_node("DashConfirmationTimer")
 onready var dash_activation_timer = get_node("DashActivationTimer")
+
 var velocity := Vector3.ZERO
 var acceleration := Vector3.ZERO
 var rotation_velocity := 0.0
 var last_player_state = {}
-var dash_charges = 2
-var dash_cooldown = 5
+
+var dash_charges = Constants.get_value("dash", "charges")
+var dash_cooldown = Constants.get_value("dash", "cooldown")
+
 var dash_cooldown_timers = []
 
 var _waiting_for_dash := false
@@ -41,7 +44,7 @@ func correct_illegal_movement():
 		transform.origin -= _collected_illegal_movement
 		_collected_illegal_movement = Vector3.ZERO
 		#TODO: adapt to latency or something i dunno once we know it on server, just a random magic number that worked for now
-		_wait_for_player_to_correct = 30
+		_wait_for_player_to_correct = 120
 
 func apply_player_state(player_state, physics_delta):
 	if _wait_for_player_to_correct<=0:
