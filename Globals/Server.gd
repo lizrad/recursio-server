@@ -12,6 +12,8 @@ var _player_room_dic: Dictionary = {}
 
 
 func _ready():
+	#TODO: put this where it makes more sense
+	Logger.load_config()
 	start_server()
 
 
