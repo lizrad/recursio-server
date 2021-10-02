@@ -19,10 +19,11 @@ func despawn_player(player_id):
 		Server.despawn_enemy_on_client(other_player_id, player_id)
 
 
-func spawn_player(player_id):
+func spawn_player(player_id,game_id):
 	var spawn_point = _find_next_spawn_point()
 	var player = _character_base_scene.instance()
 	player.set_name(str(player_id))
+	player.id = game_id
 	player.transform.origin = spawn_point
 	add_child(player)
 

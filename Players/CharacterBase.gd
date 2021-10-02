@@ -1,9 +1,10 @@
 extends KinematicBody
+class_name CharacterBase
 
 onready var Server = get_node("/root/Server")
 onready var dash_confirmation_timer = get_node("DashConfirmationTimer")
 onready var dash_activation_timer = get_node("DashActivationTimer")
-
+var id := -1
 var velocity := Vector3.ZERO
 var acceleration := Vector3.ZERO
 var rotation_velocity := 0.0
