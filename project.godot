@@ -27,7 +27,7 @@ _global_script_classes=[ {
 "base": "CharacterBase",
 "class": "Ghost",
 "language": "GDScript",
-"path": "res://Ghost.gd"
+"path": "res://Shared/Ghost.gd"
 }, {
 "base": "CharacterBase",
 "class": "Player",
@@ -86,6 +86,7 @@ Constants="*res://Shared/Constants.gd"
 [global]
 
 max=false
+limit=false
 
 [network]
 

@@ -5,7 +5,7 @@ onready var Server = get_node("/root/Server")
 var _player_scene = preload("res://Players/Player.tscn")
 var _ghost_scene = preload("res://Players/Ghost.tscn")
 var players = {}
-var ghosts = []
+var ghosts = {}
 var player_states = {}
 
 #temporary very basic spawn point system
@@ -15,8 +15,9 @@ var _current_spawn_point = 0
 
 func despawn_player(player_id):
 	player_states.erase(player_id)
-	#TODO: does this actually work correctly
-	ghosts.erase(ghosts[players[player_id].game_id])
+	for i in range (ghosts[player_id].size()):
+		ghosts[player_id][i].queue_free()
+	ghosts.erase(player_id)
 	players[player_id].queue_free()
 	players.erase(player_id)
 	for other_player_id in players:
@@ -28,8 +29,8 @@ func spawn_player(player_id, game_id):
 	player.game_id = game_id
 	player.player_id = player_id
 	player.transform.origin = spawn_point
+	ghosts[player_id]=[]
 	add_child(player)
-	ghosts.append([])
 
 	#triggering spawns of enemies on all clients
 	for other_player_id in players:
@@ -61,7 +62,7 @@ func create_ghost_from_player(player):
 	ghost.init(player.gameplay_record)
 	ghost.game_id = player.game_id
 	ghost.player_id = player.player_id
-	ghosts[player.game_id].append(ghost)
+	ghosts[player.player_id].append(ghost)
 	add_child(ghost)
 	Server.send_ghost_record(player.gameplay_record, player.player_id)
 
@@ -86,7 +87,7 @@ func update_dash_state(player_id, dash_state):
 	players[player_id].update_dash_state(dash_state)
 
 
-var timer = 10
+var timer = 3
 var do_once = false
 func _physics_process(delta):
 	timer-=delta
@@ -97,6 +98,6 @@ func _physics_process(delta):
 		do_once = true
 		stop_recording()
 		create_ghosts()
-		for i in range(ghosts.size()):
-			for j in range(ghosts[i].size()):
-				ghosts[i][j].start_replay()
+		for player_id in ghosts:
+			for i in range(ghosts[player_id].size()):
+				ghosts[player_id][i].start_replay()
