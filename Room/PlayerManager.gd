@@ -58,7 +58,9 @@ func create_ghosts():
 
 func create_ghost_from_player(player):
 	var ghost = _ghost_scene.instance()
-	ghost.init(player.gameplay_record, player.game_id, player.player_id)
+	ghost.init(player.gameplay_record)
+	ghost.game_id = player.game_id
+	ghost.player_id = player.player_id
 	ghosts[player.game_id].append(ghost)
 	add_child(ghost)
 	Server.send_ghost_record(player.gameplay_record, player.player_id)
