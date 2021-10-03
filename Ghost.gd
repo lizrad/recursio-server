@@ -1,0 +1,2 @@
+extends CharacterBase
+class_name Ghost
