@@ -5,3 +5,10 @@
 
 [node name="Player" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
+
+[node name="DashConfirmationTimer" type="Timer" parent="." index="1"]
+wait_time = 0.5
+one_shot = true
+
+[node name="DashActivationTimer" type="Timer" parent="." index="2"]
+one_shot = true
