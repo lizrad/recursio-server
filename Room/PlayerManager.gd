@@ -2,7 +2,7 @@ extends Node
 class_name PlayerManager
 
 onready var Server = get_node("/root/Server")
-var _character_base_scene = preload("res://Players/CharacterBase.tscn")
+var _player_scene = preload("res://Players/Player.tscn")
 var players = {}
 var player_states = {}
 
@@ -21,7 +21,7 @@ func despawn_player(player_id):
 
 func spawn_player(player_id, game_id):
 	var spawn_point = _find_next_spawn_point()
-	var player = _character_base_scene.instance()
+	var player = _player_scene.instance()
 	player.set_name(str(player_id))
 	player.id = game_id
 	player.transform.origin = spawn_point
