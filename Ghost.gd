@@ -33,5 +33,5 @@ func _apply_frame(frame: Dictionary):
 	rotation.y = frame["R"]
 	if frame["D"]==DASH_START:
 		dashing = true
-	if frame["D"]== DASH_START:
+	if frame["D"]== DASH_END:
 		dashing = false
