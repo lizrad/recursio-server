@@ -16,5 +16,6 @@ const GUN = 0
 const WALL = 1
 
 onready var Server = get_node("/root/Server")
-var id := -1
+var game_id := -1
+var player_id := -1
 

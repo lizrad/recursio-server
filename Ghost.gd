@@ -7,8 +7,9 @@ var _replaying = false
 var _current_frame = -1
 var dashing = false
 
-func init(gameplay_record: Dictionary, game_id):
-	id = game_id
+func init(gameplay_record: Dictionary, game_id: int, player_id:int):
+	game_id = game_id
+	player_id = player_id
 	_record = gameplay_record.duplicate(true)
 
 func start_replay():

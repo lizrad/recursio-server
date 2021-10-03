@@ -99,7 +99,7 @@ func _switch_capturing_teams(new_team: int):
 
 func _on_body_entered_area(body):
 	if body is CharacterBase:
-		start_capturing(body.id)
+		start_capturing(body.game_id)
 
 
 func start_capturing(game_id: int):
@@ -115,7 +115,7 @@ func _check_capturing_status():
 
 func _on_body_exited_area(body):
 	if body is CharacterBase:
-		stop_capturing(body.id)
+		stop_capturing(body.game_id)
 
 
 func stop_capturing(game_id: int):

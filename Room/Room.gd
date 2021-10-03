@@ -34,6 +34,7 @@ func remove_player(player_id: int) -> void:
 	game_id_to_player_id.clear()
 	var game_id = 0
 	for player_id in player_id_to_game_id:
+		_player_manager.players[player_id].game_id = game_id
 		player_id_to_game_id[player_id] = game_id
 		game_id_to_player_id[game_id] = player_id
 		game_id += 1

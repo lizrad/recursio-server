@@ -65,6 +65,8 @@ func despawn_enemy_on_client(player_id, enemy_id):
 func send_world_state(world_state, player_id):
 	rpc_unreliable_id(player_id, "receive_world_state", world_state)
 
+func send_ghost_record(gameplay_record, player_id):
+	rpc_id(player_id, "receive_ghost_record",gameplay_record)
 
 func get_server_time():
 	return OS.get_system_time_msecs()
