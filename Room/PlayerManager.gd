@@ -37,6 +37,19 @@ func spawn_player(player_id, game_id):
 	players[player_id] = player
 	Server.spawn_player_on_client(player_id, spawn_point)
 
+	#TODO: move this to where it makes sense
+	start_recording()
+
+
+func start_recording():
+	for player_id in players:
+		players[player_id].start_recording()
+
+
+func stop_recording():
+	for player_id in players:
+		players[player_id].stop_recording()
+
 
 func _find_next_spawn_point():
 	var spawn_point = _possible_spawn_points[_current_spawn_point]
@@ -58,6 +71,8 @@ func update_player_state(player_id, player_state):
 
 func update_dash_state(player_id, dash_state):
 	players[player_id].update_dash_state(dash_state)
+
+
 
 
 func _physics_process(delta):
