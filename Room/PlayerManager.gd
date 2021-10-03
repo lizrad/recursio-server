@@ -69,7 +69,10 @@ func create_ghost_from_player(player):
 	ghost.player_id = player.player_id
 	ghosts[player.player_id].append(ghost)
 	add_child(ghost)
-	Server.send_ghost_record(player.gameplay_record, player.player_id)
+	Server.send_own_ghost_record_to_client(player.player_id,player.gameplay_record)
+	for client_id in players:
+		if client_id != player.player_id:
+			Server.send_enemy_ghost_record_to_client(client_id, player.player_id, player.gameplay_record)
 
 
 func _find_next_spawn_point():
