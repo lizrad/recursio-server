@@ -21,20 +21,6 @@ var _wait_for_player_to_correct = 0
 var _recording = false
 var gameplay_record = {}
 
-const NONE = 0
-
-const DASH_START = 1
-const DASH_END = 2
-
-#TODO: connect weapon information recording with actuall weapon system when ready
-const MELEE_START = 1
-const WEAPON_START = 2
-const MELEE_END = 3
-const WEAPON_END = 4
-
-const GUN = 0
-const WALL = 1
-
 
 func start_recording():
 	gameplay_record.clear()
@@ -47,11 +33,6 @@ func start_recording():
 
 func stop_recording():
 	_recording = false
-
-
-func create_ghost_from_recording():
-	#TODO: implement
-	pass
 
 
 func _create_record_frame(time, position, rotation, attack = NONE, dash = NONE) -> Dictionary:

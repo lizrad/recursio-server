@@ -3,7 +3,9 @@ class_name PlayerManager
 
 onready var Server = get_node("/root/Server")
 var _player_scene = preload("res://Players/Player.tscn")
+var _ghost_scene = preload("res://Players/Ghost.tscn")
 var players = {}
+var ghosts = []
 var player_states = {}
 
 #temporary very basic spawn point system
@@ -13,6 +15,8 @@ var _current_spawn_point = 0
 
 func despawn_player(player_id):
 	player_states.erase(player_id)
+	#TODO: does this actually work correctly
+	ghosts.erase(ghosts[players[player_id]])
 	players[player_id].queue_free()
 	players.erase(player_id)
 	for other_player_id in players:
@@ -22,10 +26,10 @@ func despawn_player(player_id):
 func spawn_player(player_id, game_id):
 	var spawn_point = _find_next_spawn_point()
 	var player = _player_scene.instance()
-	player.set_name(str(player_id))
 	player.id = game_id
 	player.transform.origin = spawn_point
 	add_child(player)
+	ghosts.append([])
 
 	#triggering spawns of enemies on all clients
 	for other_player_id in players:
@@ -50,6 +54,15 @@ func stop_recording():
 	for player_id in players:
 		players[player_id].stop_recording()
 
+func create_ghosts():
+	for player_id in players:
+		create_ghost_from_player(players[player_id])
+
+func create_ghost_from_player(player):
+	var ghost = _ghost_scene.instance()
+	ghost.init(player.gameplay_record, player.id)
+	ghosts[player.id].append(ghost)
+	add_child(ghost)
 
 func _find_next_spawn_point():
 	var spawn_point = _possible_spawn_points[_current_spawn_point]
@@ -71,8 +84,6 @@ func update_player_state(player_id, player_state):
 
 func update_dash_state(player_id, dash_state):
 	players[player_id].update_dash_state(dash_state)
-
-
 
 
 func _physics_process(delta):
