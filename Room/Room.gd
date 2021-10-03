@@ -14,6 +14,7 @@ onready var _world_state_manager: WorldStateManager = get_node("WorldStateManage
 var player_id_to_game_id = {}
 var game_id_to_player_id = {}
 
+
 func _ready():
 	_world_state_manager.connect("world_state_updated", self, "_on_world_state_update")
 
@@ -21,8 +22,8 @@ func _ready():
 func add_player(player_id: int) -> void:
 	_player_manager.spawn_player(player_id, player_count)
 	#update id dictionary
-	player_id_to_game_id[player_id]=player_count
-	game_id_to_player_id[player_count]=player_id
+	player_id_to_game_id[player_id] = player_count
+	game_id_to_player_id[player_count] = player_id
 	player_count += 1
 
 
@@ -33,18 +34,20 @@ func remove_player(player_id: int) -> void:
 	game_id_to_player_id.clear()
 	var game_id = 0
 	for player_id in player_id_to_game_id:
-		player_id_to_game_id[player_id]=game_id
-		game_id_to_player_id[game_id]=player_id
-		game_id+=1
-		
+		player_id_to_game_id[player_id] = game_id
+		game_id_to_player_id[game_id] = player_id
+		game_id += 1
+
 	player_count -= 1
 
 
 func update_player_state(player_id, player_state):
 	_player_manager.update_player_state(player_id, player_state)
 
+
 func update_dash_state(player_id, dash_state):
-	_player_manager.update_dash_state(player_id,dash_state)
+	_player_manager.update_dash_state(player_id, dash_state)
+
 
 func get_players():
 	return _player_manager.players

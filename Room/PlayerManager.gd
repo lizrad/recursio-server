@@ -19,7 +19,7 @@ func despawn_player(player_id):
 		Server.despawn_enemy_on_client(other_player_id, player_id)
 
 
-func spawn_player(player_id,game_id):
+func spawn_player(player_id, game_id):
 	var spawn_point = _find_next_spawn_point()
 	var player = _character_base_scene.instance()
 	player.set_name(str(player_id))
@@ -48,15 +48,17 @@ func _find_next_spawn_point():
 func update_player_state(player_id, player_state):
 	if player_states.has(player_id):
 		if (
-			player_states[player_id]["T"] < player_state["T"] # playerstates have to come in the correct order
-			&& player_state["T"] - Server.get_server_time() < 25 # clock on client can't run more than 25ms fast
-		):
+			player_states[player_id]["T"] < player_state["T"]  # playerstates have to come in the correct order
+			&& player_state["T"] - Server.get_server_time() < 25
+		):  # clock on client can't run more than 25ms fast
 			player_states[player_id] = player_state
 	else:
 		player_states[player_id] = player_state
 
-func update_dash_state(player_id,dash_state):
+
+func update_dash_state(player_id, dash_state):
 	players[player_id].update_dash_state(dash_state)
+
 
 func _physics_process(delta):
 	for player_id in player_states:
