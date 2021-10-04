@@ -1,15 +1,19 @@
 extends Viewport
 class_name Room
 
+signal world_state_updated(world_state, id)
+signal room_filled()
+
+const PLAYER_NUMBER_PER_ROOM = 2
+
 var room_name: String
 var id: int
 var player_count: int = 0
 
-signal world_state_updated(world_state, id)
-signal room_filled
-
 onready var _player_manager: PlayerManager = get_node("PlayerManager")
 onready var _world_state_manager: WorldStateManager = get_node("WorldStateManager")
+onready var _game_manager: GameManager = get_node("GameManager")
+
 #id dictionary -> translates network id to game id (0 or 1)
 var player_id_to_game_id = {}
 var game_id_to_player_id = {}
@@ -25,6 +29,10 @@ func add_player(player_id: int) -> void:
 	player_id_to_game_id[player_id] = player_count
 	game_id_to_player_id[player_count] = player_id
 	player_count += 1
+	
+	# If the room is filled, start the game
+	if player_count >= PLAYER_NUMBER_PER_ROOM:
+		_game_manager.start_game()
 
 
 func remove_player(player_id: int) -> void:
@@ -52,6 +60,9 @@ func update_dash_state(player_id, dash_state):
 
 func get_players():
 	return _player_manager.players
+
+func get_game_manager() -> GameManager:
+	return _game_manager
 
 
 func _on_world_state_update(world_state):

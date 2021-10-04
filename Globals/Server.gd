@@ -62,10 +62,6 @@ func despawn_enemy_on_client(player_id, enemy_id):
 	rpc_id(player_id, "despawn_enemy", enemy_id)
 
 
-func send_world_state(world_state, player_id):
-	rpc_unreliable_id(player_id, "receive_world_state", world_state)
-
-
 func send_own_ghost_record_to_client( player_id, gameplay_record):
 	rpc_id(player_id, "receive_own_ghost_record", gameplay_record)
 	
@@ -96,3 +92,18 @@ remote func receive_dash_state(dash_state):
 	var player_id = get_tree().get_rpc_sender_id()
 	var room_id = _player_room_dic[player_id]
 	_room_manager.get_room(room_id).update_dash_state(player_id, dash_state)
+
+
+# Sends the current world state (of the players room) to the player
+func send_world_state(player_id, world_state):
+	rpc_unreliable_id(player_id, "receive_world_state", world_state)
+
+
+# Notifies a player that a specific round will start
+# Provides the server time to counteract latency
+func send_round_start_to_client(player_id, round_index, warm_up):
+	rpc_id(player_id, "receive_round_start", round_index, warm_up, get_server_time())
+
+# Notifies a player that a specific round has ended
+func send_round_end_to_client(player_id, round_index):
+	rpc_id(player_id, "receive_round_end", round_index)
