@@ -43,26 +43,28 @@ func spawn_player(player_id, game_id):
 	players[player_id] = player
 	Server.spawn_player_on_client(player_id, spawn_point)
 
-	#TODO: move this to where it makes sense
-	start_recording()
 
-
-func start_recording():
+func start_recording(ghost_index:int):
 	for player_id in players:
-		players[player_id].start_recording()
+		players[player_id].start_recording(ghost_index)
 
 
-func stop_recording():
+func stop_recording()->void:
 	for player_id in players:
 		players[player_id].stop_recording()
 
 
-func create_ghosts():
+func create_ghosts()->void:
 	for player_id in players:
-		create_ghost_from_player(players[player_id])
+		_create_ghost_from_player(players[player_id])
 
 
-func create_ghost_from_player(player):
+func restart_ghosts()->void:
+	for player_id in ghosts:
+			for i in range(ghosts[player_id].size()):
+				ghosts[player_id][i].start_replay()
+
+func _create_ghost_from_player(player)->void:
 	var ghost = _ghost_scene.instance()
 	ghost.init(player.gameplay_record)
 	ghost.game_id = player.game_id
@@ -97,19 +99,7 @@ func update_dash_state(player_id, dash_state):
 	players[player_id].update_dash_state(dash_state)
 
 
-var timer = 3
-var do_once = false
-
-
 func _physics_process(delta):
-	timer -= delta
 	for player_id in player_states:
 		if players.has(player_id):
 			players[player_id].apply_player_state(player_states[player_id], delta)
-	if timer <= 0 and not do_once:
-		do_once = true
-		stop_recording()
-		create_ghosts()
-		for player_id in ghosts:
-			for i in range(ghosts[player_id].size()):
-				ghosts[player_id][i].start_replay()

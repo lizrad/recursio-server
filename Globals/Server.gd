@@ -102,8 +102,10 @@ func send_world_state(player_id, world_state):
 # Notifies a player that a specific round will start
 # Provides the server time to counteract latency
 func send_round_start_to_client(player_id, round_index, warm_up):
+	Logger.info("Sending round start to client", "connection")
 	rpc_id(player_id, "receive_round_start", round_index, warm_up, get_server_time())
 
 # Notifies a player that a specific round has ended
 func send_round_end_to_client(player_id, round_index):
+	Logger.info("Sending round end to client", "connection")
 	rpc_id(player_id, "receive_round_end", round_index)

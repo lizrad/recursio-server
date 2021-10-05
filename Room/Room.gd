@@ -21,7 +21,20 @@ var game_id_to_player_id = {}
 
 func _ready():
 	_world_state_manager.connect("world_state_updated", self, "_on_world_state_update")
+	_game_manager.connect("prep_phase_over",self, "_on_prep_phase_over")
+	_game_manager.connect("round_ended",self, "_on_round_ended")
 
+
+func _on_prep_phase_over( _round_index: int) ->void:
+	#TODO: change this when ghosts to replace are pickable after round 3
+	#for now we always replace the last ghost after we hit max ghost count
+	_player_manager.restart_ghosts()
+	var ghost_index = min(_round_index-1,2)
+	_player_manager.start_recording(ghost_index)
+
+func _on_round_ended(_round_index: int) -> void:
+	_player_manager.stop_recording()
+	_player_manager.create_ghosts()
 
 func add_player(player_id: int) -> void:
 	_player_manager.spawn_player(player_id, player_count)

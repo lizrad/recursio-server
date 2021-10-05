@@ -22,12 +22,16 @@ var _recording = false
 var gameplay_record = {}
 
 
-func start_recording():
+func start_recording(ghost_index: int):
 	gameplay_record.clear()
 	_recording = true
+	#time the recording started
 	gameplay_record["T"] = Server.get_server_time()
+	#index of the ghost
+	gameplay_record["G"] = ghost_index
 	#TODO: connect weapon information recording with actuall weapon system when ready
 	gameplay_record["W"] = Constants.GUN
+	#array of gameplay data per frame
 	gameplay_record["F"] = []
 
 
@@ -106,20 +110,21 @@ func update_dash_state(dash_state):
 			#reset collection of illegal movement if we get confirmation of dash
 			_waiting_for_dash = false
 			_collected_illegal_movement_if_not_dashing = Vector3.ZERO
-
-			var i = gameplay_record["F"].size() - 1
-			while gameplay_record["F"][i]["T"] > dash_state["T"] && i >= 0:
-				i -= 1
-			gameplay_record["F"][i]["D"] = Constants.DASH_START
+			
+			if _recording:
+				var i = gameplay_record["F"].size() - 1
+				while gameplay_record["F"][i]["T"] > dash_state["T"] && i >= 0:
+					i -= 1
+				gameplay_record["F"][i]["D"] = Constants.DASH_START
 		else:
 			Logger.info("Illegal dash", "movement validation")
 	#TODO: this does not work correctly as the client only sends dash_state 0 a long time after it actually has ended
 	else:
-		print("dash ended")
-		var i = gameplay_record["F"].size() - 1
-		while gameplay_record["F"][i]["T"] > dash_state["T"] && i >= 0:
-			i -= 1
-		gameplay_record["F"][i]["D"] = Constants.DASH_END
+		if _recording:
+			var i = gameplay_record["F"].size() - 1
+			while gameplay_record["F"][i]["T"] > dash_state["T"] && i >= 0:
+				i -= 1
+			gameplay_record["F"][i]["D"] = Constants.DASH_END
 
 
 func _valid_dash_start_time(time):
