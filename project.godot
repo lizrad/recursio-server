@@ -76,6 +76,7 @@ _global_script_class_icons={
 
 config/name="recursio-server"
 run/main_scene="res://Globals/Server.tscn"
+boot_splash/image="res://lizrad_logo.png"
 config/icon="res://icon.png"
 
 [autoload]
