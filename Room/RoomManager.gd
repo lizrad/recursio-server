@@ -27,7 +27,7 @@ func create_room(room_name: String) -> int:
 	_room_dic[_room_id_counter] = room
 	_room_id_counter += 1
 	room_count += 1
-
+	Logger.info("Room added (ID:%s)" % room.id, "rooms")
 	return room.id
 
 
@@ -36,6 +36,7 @@ func delete_room(room_id: int) -> void:
 		_room_dic[room_id].queue_free()
 		_room_dic.erase(room_id)
 		room_count -= 1
+		Logger.info("Room removed (ID:%s)" % room_id, "rooms")
 
 
 func join_room(room_id: int, player_id: int) -> void:
