@@ -16,7 +16,9 @@ func create_room(room_name: String) -> int:
 	room.set_name(str(_room_id_counter))
 	room.room_name = room_name
 	room.id = _room_id_counter
-	add_child(room)
+	$ViewportContainer.add_child(room)
+	
+	$ViewportContainer.rect_clip_content = true
 
 	room.connect("world_state_updated", self, "_on_world_state_update")
 	room.get_game_manager().connect("round_started", self, "_on_round_start", [room.id])

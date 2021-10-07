@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Room/PlayerManager.gd" type="Script" id=1]
 [ext_resource path="res://Room/WorldStateManager.gd" type="Script" id=2]
@@ -6,12 +6,17 @@
 [ext_resource path="res://Room/GameManager.gd" type="Script" id=4]
 [ext_resource path="res://Level/CapturePoint.tscn" type="PackedScene" id=5]
 
+[sub_resource type="Environment" id=2]
+background_mode = 1
+
 [sub_resource type="World" id=1]
+environment = SubResource( 2 )
 
 [node name="Room" type="Viewport"]
-size = Vector2( 1920, 1080 )
+size = Vector2( 1024, 600 )
 own_world = true
 world = SubResource( 1 )
+render_target_update_mode = 3
 script = ExtResource( 3 )
 
 [node name="PlayerManager" type="Node" parent="."]
@@ -24,3 +29,7 @@ script = ExtResource( 2 )
 script = ExtResource( 4 )
 
 [node name="CapturePoint" parent="." instance=ExtResource( 5 )]
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 10, 0 )
+current = true
