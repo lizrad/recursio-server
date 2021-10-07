@@ -35,11 +35,13 @@ func _on_prep_phase_end( _round_index: int) ->void:
 	var ghost_index = min(_round_index-1,Constants.get_value("ghosts", "max_amount"))
 	_player_manager.enable_ghosts()
 	_player_manager.start_recording(ghost_index)
+	_player_manager.set_players_can_move(true)
 
 func _on_round_ended(_round_index: int) -> void:
 	_player_manager.stop_recording()
 	_player_manager.create_ghosts()
 	_player_manager.disable_ghosts()
+	_player_manager.set_players_can_move(false)
 
 func add_player(player_id: int) -> void:
 	_player_manager.spawn_player(player_id, player_count)

@@ -81,6 +81,12 @@ func disable_ghosts()->void:
 			for i in range(ghosts[player_id].size()):
 				remove_child(ghosts[player_id][i])
 
+
+func set_players_can_move(can_move : bool) -> void:
+	for player_id in players:
+		players[player_id].can_move = can_move
+
+
 func _create_ghost_from_player(player)->void:
 	var ghost = _ghost_scene.instance()
 	ghost.init(player.gameplay_record)
