@@ -31,7 +31,7 @@ func create_room(room_name: String) -> int:
 	_room_dic[_room_id_counter] = room
 	_room_id_counter += 1
 	room_count += 1
-
+	Logger.info("Room added (ID:%s)" % room.id, "rooms")
 	return room.id
 
 
@@ -40,6 +40,7 @@ func delete_room(room_id: int) -> void:
 		_room_dic[room_id].queue_free()
 		_room_dic.erase(room_id)
 		room_count -= 1
+		Logger.info("Room removed (ID:%s)" % room_id, "rooms")
 
 
 func join_room(room_id: int, player_id: int) -> void:
@@ -79,10 +80,10 @@ func _on_world_state_update(world_state, room_id) -> void:
 
 
 # Sends the round start event to all players in the room
-func _on_round_start(round_index, warm_up, room_id):
+func _on_round_start(round_index, latency_delay, room_id):
 	var room: Room = _room_dic[room_id]
 	for player_id in room.get_players().keys():
-		_server.send_round_start_to_client(player_id, round_index, warm_up)
+		_server.send_round_start_to_client(player_id, round_index, latency_delay)
 
 
 # Sends the round end event to all players in the room

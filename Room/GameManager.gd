@@ -1,9 +1,18 @@
 extends Node
 class_name GameManager
 
-signal round_started(round_index, warm_up)
-signal prep_phase_over(round_index)
+# Round started signal
+# Includes the index of the round and a latency delay
+signal round_started(round_index, latency_delay)
+
+# Preperation phase ended signal
+# Includes the round index
+signal prep_phase_ended(round_index)
+
+# Round ended signal
+# Inculdes the round index
 signal round_ended(round_index)
+
 
 signal capture_point_team_changed(team_id, capture_point)
 signal capture_point_captured(team_id, capture_point)
@@ -11,17 +20,26 @@ signal capture_point_status_changed(capture_progress, team_id, capture_point)
 signal capture_point_capture_lost(team_id, capture_point)
 
 
-# A delay before the round starts
-var _warm_up_delay: float = 2.0
+
+# A delay before the prep phase starts to counteract latency
+onready var _latency_delay: float = Constants.get_value("gameplay", "latency_delay")
+
+# The length of the preperation phase
+onready var _prep_phase_time: float = Constants.get_value("gameplay", "prep_phase_time")
+
+# The length of one round
+onready var _game_phase_length: float = Constants.get_value("gameplay", "game_phase_time")
+
 # The index of the current round
 var _round_index: int = 0
-# The length of one round
-var _round_length: float = 10.0
 
 
 var _round_timer: float = 0.0
+
 var _round_in_progress: bool = false
 var level
+
+var _game_phase_in_progress: bool = false
 
 func _ready():
 	set_process(false)
@@ -34,24 +52,26 @@ func _process(delta):
 		if _round_index >= 5:
 			self.set_process(false)
 			return
-		_start_round()
+		_on_round_start()
 	
-	_round_timer += delta	
+	_round_timer += delta
+
+	var time_to_game_phase: float = _prep_phase_time + _latency_delay
 	
-	# Pre-Round
-	if _round_timer < _warm_up_delay:
+	# Pre-Game-Phase -> Do nothing
+	if _round_timer < time_to_game_phase:
 		return
 	
-	# Round Start
-	if _round_timer >= _warm_up_delay and not _round_in_progress:
-		_round_in_progress = true
-		_prep_phase_over()
+	# Game-Phase Start
+	if _round_timer >= time_to_game_phase and not _game_phase_in_progress:
+		_game_phase_in_progress = true
+		_on_prep_phase_end()
 		return
 	
-	# Round End
-	if _round_timer >= _warm_up_delay + _round_length and _round_in_progress:
-		_round_in_progress = false
-		_end_round()
+	# Game-Phase/Round End
+	if _round_timer >= time_to_game_phase + _game_phase_length and _game_phase_in_progress:
+		_game_phase_in_progress = false
+		_on_round_end()
 		_round_timer = 0
 
 
@@ -79,15 +99,17 @@ func _on_capture_team_changed(team_id, capture_point):
 func _on_capture_lost(team_id, capture_point):
 	emit_signal("capture_point_capture_lost", team_id, capture_point)
 
-# Called every round
-func _start_round():
+# Called when the round starts
+func _on_round_start():
 	Logger.info("Round " + str(_round_index) + " started", "gameplay")
-	emit_signal("round_started", _round_index, _warm_up_delay)
+	emit_signal("round_started", _round_index, _latency_delay)
 	
-func _prep_phase_over():
-	Logger.info("Prep Phase "+ str(_round_index) + " over", "gameplay")
-	emit_signal("prep_phase_over", _round_index)
+# Called when the preperation phase ends
+func _on_prep_phase_end():
+	Logger.info("Prep Phase "+ str(_round_index) + " ended", "gameplay")
+	emit_signal("prep_phase_ended", _round_index)
 
-func _end_round():
+# Called when the round ends
+func _on_round_end():
 	Logger.info("Round " + str(_round_index) + " ended", "gameplay")
 	emit_signal("round_ended", _round_index)

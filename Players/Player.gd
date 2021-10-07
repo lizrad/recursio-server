@@ -22,6 +22,8 @@ var _recording = false
 var gameplay_record = {}
 var spawn_point := Vector3.ZERO
 
+var can_move: bool = false
+
 func start_recording(ghost_index: int):
 	gameplay_record.clear()
 	_recording = true
@@ -62,21 +64,25 @@ func apply_player_state(player_state, physics_delta):
 		_wait_for_player_to_correct -= 1
 
 	# TODO: validate attack data
+	
+	
 
 	var last_position
 	if last_player_state.empty():
 		last_position = transform.origin
 	else:
 		last_position = last_player_state["P"]
-
-	var next_position = player_state["P"]
-
-	var physics_velocity = (next_position - last_position) / physics_delta
-	var new_velocity = move_and_slide(player_state["V"])
-	acceleration = (new_velocity - velocity) / physics_delta
-	velocity = new_velocity
-	rotation_velocity = (player_state["R"] - rotation.y) / physics_delta
-	rotation.y = player_state["R"]
+	
+	# Ignore movement if player cannot move
+	if can_move:
+		var next_position = player_state["P"]
+	
+		var physics_velocity = (next_position - last_position) / physics_delta
+		var new_velocity = move_and_slide(player_state["V"])
+		acceleration = (new_velocity - velocity) / physics_delta
+		velocity = new_velocity
+		rotation_velocity = (player_state["R"] - rotation.y) / physics_delta
+		rotation.y = player_state["R"]
 
 	if _recording:
 		gameplay_record["F"].append(
@@ -148,6 +154,11 @@ func _validate_position(player_state, physics_delta):
 	var goal_position = player_state["P"]
 	var start_position = last_player_state["P"]
 	var distance = goal_position - start_position
+	
+	# Don't let the player move in prep-phase
+	if not can_move:
+		goal_position = start_position
+		distance = Vector3.ZERO
 
 	var packet_number_diff = -1
 	#checking if ids are currently looping
