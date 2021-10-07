@@ -13,6 +13,7 @@ var player_count: int = 0
 onready var _player_manager: PlayerManager = get_node("PlayerManager")
 onready var _world_state_manager: WorldStateManager = get_node("WorldStateManager")
 onready var _game_manager: GameManager = get_node("GameManager")
+onready var _level = get_node("LevelH") # TODO: Should be configurable later
 
 #id dictionary -> translates network id to game id (0 or 1)
 var player_id_to_game_id = {}
@@ -23,6 +24,8 @@ func _ready():
 	_world_state_manager.connect("world_state_updated", self, "_on_world_state_update")
 	_game_manager.connect("prep_phase_over",self, "_on_prep_phase_over")
 	_game_manager.connect("round_ended",self, "_on_round_ended")
+	
+	_player_manager.level = _level
 
 
 func _on_prep_phase_over( _round_index: int) ->void:

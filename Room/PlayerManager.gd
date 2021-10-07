@@ -10,7 +10,9 @@ var player_states = {}
 
 #temporary very basic spawn point system
 var _possible_spawn_points = [Vector3(0, 0, 5), Vector3(0, 0, -5)]
-var _current_spawn_point = 0
+var _current_player_number = 0 # 0 or 1
+
+var level
 
 
 func despawn_player(player_id):
@@ -99,9 +101,10 @@ func _create_ghost_from_player(player)->void:
 
 
 func _find_next_spawn_point():
-	var spawn_point = _possible_spawn_points[_current_spawn_point]
+	# TODO: Change index based on round number
+	var spawn_point = level.get_spawn_points(_current_player_number + 1)[0]
 	#spawnpoints currently just switch between two positions
-	_current_spawn_point = 1 - _current_spawn_point
+	_current_player_number = 1 - _current_player_number
 	return spawn_point
 
 
