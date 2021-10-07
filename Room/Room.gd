@@ -29,12 +29,14 @@ func _on_prep_phase_over( _round_index: int) ->void:
 	#TODO: change this when ghosts to replace are pickable after round 3
 	#for now we always replace the last ghost after we hit max ghost count
 	_player_manager.restart_ghosts()
-	var ghost_index = min(_round_index-1,2)
+	var ghost_index = min(_round_index-1,Constants.get_value("ghosts", "max_amount"))
+	_player_manager.enable_ghosts()
 	_player_manager.start_recording(ghost_index)
 
 func _on_round_ended(_round_index: int) -> void:
 	_player_manager.stop_recording()
 	_player_manager.create_ghosts()
+	_player_manager.disable_ghosts()
 
 func add_player(player_id: int) -> void:
 	_player_manager.spawn_player(player_id, player_count)

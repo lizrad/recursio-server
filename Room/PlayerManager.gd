@@ -23,6 +23,9 @@ func despawn_player(player_id):
 	for other_player_id in players:
 		Server.despawn_enemy_on_client(other_player_id, player_id)
 
+func reset_spawnpoints()->void:
+	for player_id in players:
+		players[player_id].transform.origin = players[player_id].spawn_point
 
 func spawn_player(player_id, game_id):
 	var spawn_point = _find_next_spawn_point()
@@ -30,6 +33,7 @@ func spawn_player(player_id, game_id):
 	player.game_id = game_id
 	player.player_id = player_id
 	player.transform.origin = spawn_point
+	player.spawn_point = spawn_point
 	ghosts[player_id] = []
 	add_child(player)
 
@@ -64,12 +68,29 @@ func restart_ghosts()->void:
 			for i in range(ghosts[player_id].size()):
 				ghosts[player_id][i].start_replay(Server.get_server_time())
 
+
+func enable_ghosts() ->void:
+	for player_id in ghosts:
+			for i in range(ghosts[player_id].size()):
+				add_child(ghosts[player_id][i])
+
+func disable_ghosts()->void:
+	for player_id in ghosts:
+			for i in range(ghosts[player_id].size()):
+				remove_child(ghosts[player_id][i])
+
 func _create_ghost_from_player(player)->void:
 	var ghost = _ghost_scene.instance()
 	ghost.init(player.gameplay_record)
 	ghost.game_id = player.game_id
 	ghost.player_id = player.player_id
-	ghosts[player.player_id].append(ghost)
+	if ghosts[player.player_id].size()<=Constants.get_value("ghosts", "max_amount"):
+		ghosts[player.player_id].append(ghost)
+	else:
+		var old_ghost = ghosts[player.player_id][player.gameplay_record["G"]]
+		ghosts[player.player_id][player.gameplay_record["G"]] = ghost
+		old_ghost.queue_free()
+	
 	add_child(ghost)
 	Server.send_own_ghost_record_to_client(player.player_id,player.gameplay_record)
 	for client_id in players:

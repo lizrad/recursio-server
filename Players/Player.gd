@@ -20,7 +20,7 @@ var _wait_for_player_to_correct = 0
 
 var _recording = false
 var gameplay_record = {}
-
+var spawn_point := Vector3.ZERO
 
 func start_recording(ghost_index: int):
 	gameplay_record.clear()

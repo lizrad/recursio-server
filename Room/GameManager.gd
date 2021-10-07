@@ -21,13 +21,12 @@ func _ready():
 
 # Game-State behavior 
 func _process(delta):
-	# DEBUG: Add winning condition for completing a game
-	if _round_index >= 5:
-		self.set_process(false)
-		return
-	
 	if _round_timer == 0:
 		_round_index += 1
+		# DEBUG: Add winning condition for completing a game
+		if _round_index >= 5:
+			self.set_process(false)
+			return
 		_start_round()
 	
 	_round_timer += delta	
