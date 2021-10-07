@@ -62,7 +62,7 @@ func create_ghosts()->void:
 func restart_ghosts()->void:
 	for player_id in ghosts:
 			for i in range(ghosts[player_id].size()):
-				ghosts[player_id][i].start_replay()
+				ghosts[player_id][i].start_replay(Server.get_server_time())
 
 func _create_ghost_from_player(player)->void:
 	var ghost = _ghost_scene.instance()
