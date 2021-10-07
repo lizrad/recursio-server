@@ -3,6 +3,7 @@ extends Spatial
 
 signal capture_team_changed(team_id)
 signal captured(team_id)
+signal capture_status_changed(capture_progress, team_id)
 signal capture_lost(team_id)
 
 var capture_progress: float = 0
@@ -55,6 +56,7 @@ func _capture(delta: float):
 	capture_progress = min(1, capture_progress + delta * capture_speed)
 	if not _is_captured:
 		Logger.debug("Capture progress: " + str(capture_progress), "capture point")
+		emit_signal("capture_status_changed", capture_progress, capture_team)
 	if capture_progress == 1 and not _is_captured:
 		_is_captured = true
 		Logger.info("Point captured by " + str(capture_team), "capture point")
@@ -68,6 +70,7 @@ func _recapture(delta: float):
 	else:
 		Logger.info("Capturing team changed to  " + str(_current_capture_team), "capture point")
 		_switch_capturing_teams(_current_capture_team)
+		emit_signal("capture_status_changed", capture_progress, capture_team)
 
 
 func _release(delta: float):
@@ -78,9 +81,11 @@ func _release(delta: float):
 			Logger.info("Point lost by " + str(capture_team), "capture point")
 		capture_progress = max(0, capture_progress - delta * capture_release_speed)
 		Logger.debug("Release progress: " + str(capture_progress), "capture point")
+		emit_signal("capture_status_changed", capture_progress, capture_team)
 	elif capture_team != -1:
 		# Process reached zero with no team currently capturing
 		_reset_capture_point()
+		emit_signal("capture_status_changed", capture_progress, capture_team)
 
 
 func _reset_capture_point():

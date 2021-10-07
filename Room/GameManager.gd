@@ -5,6 +5,12 @@ signal round_started(round_index, warm_up)
 signal prep_phase_over(round_index)
 signal round_ended(round_index)
 
+signal capture_point_team_changed(team_id, capture_point)
+signal capture_point_captured(team_id, capture_point)
+signal capture_point_status_changed(capture_progress, team_id, capture_point)
+signal capture_point_capture_lost(team_id, capture_point)
+
+
 # A delay before the round starts
 var _warm_up_delay: float = 2.0
 # The index of the current round
@@ -15,6 +21,7 @@ var _round_length: float = 10.0
 
 var _round_timer: float = 0.0
 var _round_in_progress: bool = false
+var level
 
 func _ready():
 	set_process(false)
@@ -48,15 +55,29 @@ func _process(delta):
 		_round_timer = 0
 
 
-
 # Called when the room is full
 func start_game():
+	for i in range(level.get_capture_points().size()):
+		level.get_capture_points()[i].connect("capture_status_changed", self, "_on_capture_status_changed", [i])
+		level.get_capture_points()[i].connect("captured", self, "_on_captured", [i])
+		level.get_capture_points()[i].connect("capture_team_changed",self, "_on_capture_team_changed", [i])
+		level.get_capture_points()[i].connect("capture_lost",self, "_on_capture_lost", [i])
 	Logger.info("Game started", "gameplay")
 	# DEGUB: Replace with 'All players are ready' functionality
 	yield (get_tree().create_timer(3), "timeout")
 	set_process(true)
 
+func _on_capture_status_changed(capture_progress, team_id, capture_point):
+	emit_signal("capture_point_status_changed", capture_progress, team_id, capture_point)
 
+func _on_captured(team_id, capture_point):
+	emit_signal("capture_point_captured", team_id, capture_point)
+
+func _on_capture_team_changed(team_id, capture_point):
+	emit_signal("capture_point_team_changed", team_id, capture_point)
+
+func _on_capture_lost(team_id, capture_point):
+	emit_signal("capture_point_capture_lost", team_id, capture_point)
 
 # Called every round
 func _start_round():

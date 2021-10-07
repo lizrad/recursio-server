@@ -26,6 +26,7 @@ func _ready():
 	_game_manager.connect("round_ended",self, "_on_round_ended")
 	
 	_player_manager.level = _level
+	_game_manager.level = _level
 
 
 func _on_prep_phase_over( _round_index: int) ->void:
