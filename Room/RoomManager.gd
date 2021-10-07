@@ -75,10 +75,10 @@ func _on_world_state_update(world_state, room_id) -> void:
 
 
 # Sends the round start event to all players in the room
-func _on_round_start(round_index, warm_up, room_id):
+func _on_round_start(round_index, latency_delay, room_id):
 	var room: Room = _room_dic[room_id]
 	for player_id in room.get_players().keys():
-		_server.send_round_start_to_client(player_id, round_index, warm_up)
+		_server.send_round_start_to_client(player_id, round_index, latency_delay)
 
 
 # Sends the round end event to all players in the room

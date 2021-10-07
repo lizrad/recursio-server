@@ -22,13 +22,13 @@ var game_id_to_player_id = {}
 
 func _ready():
 	_world_state_manager.connect("world_state_updated", self, "_on_world_state_update")
-	_game_manager.connect("prep_phase_over",self, "_on_prep_phase_over")
+	_game_manager.connect("prep_phase_ended",self, "_on_prep_phase_end")
 	_game_manager.connect("round_ended",self, "_on_round_ended")
 	
 	_player_manager.level = _level
 
 
-func _on_prep_phase_over( _round_index: int) ->void:
+func _on_prep_phase_end( _round_index: int) ->void:
 	#TODO: change this when ghosts to replace are pickable after round 3
 	#for now we always replace the last ghost after we hit max ghost count
 	_player_manager.restart_ghosts()
