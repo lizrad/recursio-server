@@ -18,6 +18,7 @@ signal capture_point_team_changed(team_id, capture_point)
 signal capture_point_captured(team_id, capture_point)
 signal capture_point_status_changed(capture_progress, team_id, capture_point)
 signal capture_point_capture_lost(team_id, capture_point)
+signal game_result(team_id)
 
 
 
@@ -92,6 +93,7 @@ func _on_capture_status_changed(capture_progress, team_id, capture_point):
 
 func _on_captured(team_id, capture_point):
 	emit_signal("capture_point_captured", team_id, capture_point)
+	_check_for_win()
 
 func _on_capture_team_changed(team_id, capture_point):
 	emit_signal("capture_point_team_changed", team_id, capture_point)
@@ -99,6 +101,17 @@ func _on_capture_team_changed(team_id, capture_point):
 func _on_capture_lost(team_id, capture_point):
 	emit_signal("capture_point_capture_lost", team_id, capture_point)
 
+func _check_for_win():
+	var captured_points_score = [0,0]
+	for capture_point in level.get_capture_points():
+		if capture_point.capture_progress==1:
+			captured_points_score[capture_point.capture_team]+=1
+	
+	var win_score = floor(level.get_capture_points().size()*0.5)+1
+	for i in range(captured_points_score.size()):
+		if captured_points_score[i] >= win_score:
+			emit_signal("game_result", i)
+	
 # Called when the round starts
 func _on_round_start():
 	Logger.info("Round " + str(_round_index) + " started", "gameplay")

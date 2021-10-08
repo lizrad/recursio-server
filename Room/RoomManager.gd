@@ -27,7 +27,8 @@ func create_room(room_name: String) -> int:
 	room.get_game_manager().connect("capture_point_captured", self, "_on_capture_point_captured", [room.id])
 	room.get_game_manager().connect("capture_point_status_changed", self, "_on_capture_point_status_changed", [room.id])
 	room.get_game_manager().connect("capture_point_capture_lost", self, "_on_capture_point_capture_lost", [room.id])
-
+	room.get_game_manager().connect("game_result", self, "_on_game_result", [room.id])
+	
 	_room_dic[_room_id_counter] = room
 	_room_id_counter += 1
 	room_count += 1
@@ -114,10 +115,17 @@ func _on_capture_point_status_changed(capture_progress, team_id, capture_point, 
 		capturing_player_id = room.game_id_to_player_id[team_id]
 	for player_id in room.get_players().keys():
 		_server.send_capture_point_status_changed(player_id, capturing_player_id, capture_point, capture_progress)
+
+
 func _on_capture_point_capture_lost(team_id, capture_point, room_id):
 	var room = _room_dic[room_id]
 	var capturing_player_id = room.game_id_to_player_id[team_id]
 	for player_id in room.get_players().keys():
 		_server.send_capture_point_capture_lost(player_id, capturing_player_id, capture_point)
 
-
+func _on_game_result(team_id, room_id):
+	var room = _room_dic[room_id]
+	var winning_player_id = room.game_id_to_player_id[team_id]
+	
+	for player_id in room.get_players().keys():
+		_server.send_game_result(player_id, winning_player_id)

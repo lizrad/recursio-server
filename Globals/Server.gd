@@ -125,3 +125,7 @@ func send_round_start_to_client(player_id, round_index, latency_delay):
 func send_round_end_to_client(player_id, round_index):
 	Logger.info("Sending round end to client", "connection")
 	rpc_id(player_id, "receive_round_end", round_index)
+
+func send_game_result(player_id, winning_player_id):
+	Logger.info("Sending game result to client", "connection")
+	rpc_id(player_id, "receive_game_result", winning_player_id)
