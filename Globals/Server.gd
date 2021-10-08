@@ -94,6 +94,12 @@ remote func receive_dash_state(dash_state):
 	_room_manager.get_room(room_id).update_dash_state(player_id, dash_state)
 
 
+remote func receive_action_trigger(action):
+	Logger.info("received action trigger %s" %[action], "connection")
+	var player_id = get_tree().get_rpc_sender_id()
+	# TODO: handle action depending on type:  {"A": Constants.ActionType, "T": Server.get_server_time()}
+
+
 # Sends the current world state (of the players room) to the player
 func send_world_state(player_id, world_state):
 	rpc_unreliable_id(player_id, "receive_world_state", world_state)
