@@ -13,6 +13,15 @@ signal prep_phase_ended(round_index)
 # Inculdes the round index
 signal round_ended(round_index)
 
+
+signal capture_point_team_changed(team_id, capture_point)
+signal capture_point_captured(team_id, capture_point)
+signal capture_point_status_changed(capture_progress, team_id, capture_point)
+signal capture_point_capture_lost(team_id, capture_point)
+signal game_result(team_id)
+
+
+
 # A delay before the prep phase starts to counteract latency
 onready var _latency_delay: float = Constants.get_value("gameplay", "latency_delay")
 
@@ -27,6 +36,10 @@ var _round_index: int = 0
 
 
 var _round_timer: float = 0.0
+
+var _round_in_progress: bool = false
+var level
+
 var _game_phase_in_progress: bool = false
 
 func _ready():
@@ -63,15 +76,42 @@ func _process(delta):
 		_round_timer = 0
 
 
-
 # Called when the room is full
 func start_game():
+	for i in range(level.get_capture_points().size()):
+		level.get_capture_points()[i].connect("capture_status_changed", self, "_on_capture_status_changed", [i])
+		level.get_capture_points()[i].connect("captured", self, "_on_captured", [i])
+		level.get_capture_points()[i].connect("capture_team_changed",self, "_on_capture_team_changed", [i])
+		level.get_capture_points()[i].connect("capture_lost",self, "_on_capture_lost", [i])
 	Logger.info("Game started", "gameplay")
 	# DEGUB: Replace with 'All players are ready' functionality
 	yield (get_tree().create_timer(3), "timeout")
 	set_process(true)
 
+func _on_capture_status_changed(capture_progress, team_id, capture_point):
+	emit_signal("capture_point_status_changed", capture_progress, team_id, capture_point)
 
+func _on_captured(team_id, capture_point):
+	emit_signal("capture_point_captured", team_id, capture_point)
+	_check_for_win()
+
+func _on_capture_team_changed(team_id, capture_point):
+	emit_signal("capture_point_team_changed", team_id, capture_point)
+
+func _on_capture_lost(team_id, capture_point):
+	emit_signal("capture_point_capture_lost", team_id, capture_point)
+
+func _check_for_win():
+	var captured_points_score = [0,0]
+	for capture_point in level.get_capture_points():
+		if capture_point.capture_progress==1:
+			captured_points_score[capture_point.capture_team]+=1
+	
+	var win_score = floor(level.get_capture_points().size()*0.5)+1
+	for i in range(captured_points_score.size()):
+		if captured_points_score[i] >= win_score:
+			emit_signal("game_result", i)
+	
 # Called when the round starts
 func _on_round_start():
 	Logger.info("Round " + str(_round_index) + " started", "gameplay")
