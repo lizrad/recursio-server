@@ -20,7 +20,7 @@ signal capture_point_status_changed(capture_progress, team_id, capture_point)
 signal capture_point_capture_lost(team_id, capture_point)
 signal game_result(team_id)
 
-
+var level
 
 # A delay before the prep phase starts to counteract latency
 onready var _latency_delay: float = Constants.get_value("gameplay", "latency_delay")
@@ -38,21 +38,25 @@ var _round_index: int = 0
 var _round_timer: float = 0.0
 
 var _round_in_progress: bool = false
-var level
+
 
 var _game_phase_in_progress: bool = false
 
 func _ready():
 	set_process(false)
 
+
+func _reset():
+	_round_index = 0
+	_round_timer = 0.0
+	_round_in_progress = false
+	_game_phase_in_progress = false
+	set_process(false)
+	
 # Game-State behavior 
 func _process(delta):
 	if _round_timer == 0:
 		_round_index += 1
-		# DEBUG: Add winning condition for completing a game
-		if _round_index >= 5:
-			self.set_process(false)
-			return
 		_on_round_start()
 	
 	_round_timer += delta

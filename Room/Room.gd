@@ -29,6 +29,11 @@ func _ready():
 	_game_manager.level = _level
 
 
+func reset():
+	_player_manager.reset()
+	_game_manager.reset()
+	_level.reset()
+
 func _on_prep_phase_end( _round_index: int) ->void:
 	#TODO: change this when ghosts to replace are pickable after round 3
 	#for now we always replace the last ghost after we hit max ghost count
@@ -53,9 +58,11 @@ func add_player(player_id: int) -> void:
 	
 	# If the room is filled, start the game
 	if player_count >= PLAYER_NUMBER_PER_ROOM:
-		_game_manager.start_game()
+		start_game()
 
-
+func start_game():
+	_game_manager.start_game()
+	
 func remove_player(player_id: int) -> void:
 	_player_manager.despawn_player(player_id)
 	#update id dictionary

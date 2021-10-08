@@ -13,7 +13,14 @@ var _possible_spawn_points = [Vector3(0, 0, 5), Vector3(0, 0, -5)]
 var _current_player_number = 0 # 0 or 1
 
 var level
-
+func reset():
+	stop_recording()
+	for player_id in ghosts:
+			for i in range(ghosts[player_id].size()):
+				ghosts[player_id][i].queue_free()
+			ghosts[player_id].clear()
+	ghosts.clear()
+	player_states.clear()
 
 func despawn_player(player_id):
 	player_states.erase(player_id)

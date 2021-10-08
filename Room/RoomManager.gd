@@ -126,6 +126,8 @@ func _on_capture_point_capture_lost(team_id, capture_point, room_id):
 func _on_game_result(team_id, room_id):
 	var room = _room_dic[room_id]
 	var winning_player_id = room.game_id_to_player_id[team_id]
-	
 	for player_id in room.get_players().keys():
 		_server.send_game_result(player_id, winning_player_id)
+	Logger.info("Resetting", "gameplay")
+	#room.reset()
+	#room.start_game()

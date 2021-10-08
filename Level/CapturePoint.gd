@@ -31,6 +31,15 @@ func _ready():
 	_release_speed = Constants.get_value("capture","release_speed")
 	_capture_time = Constants.get_value("capture","capture_time")
 
+func reset():
+	capture_progress = 0
+	capture_team = -1
+	_current_capture_team = -1
+	_being_captured = false
+	_capturing_paused = false
+	_is_captured= false
+	for i in range(_capturing_entities.size()):
+		_capturing_entities[i]=0
 
 func _process(delta):
 	if _capturing_paused:
