@@ -86,7 +86,7 @@ func enable_ghosts() ->void:
 	for player_id in ghosts:
 			for i in range(ghosts[player_id].size()):
 				add_child(ghosts[player_id][i])
-				ghosts[player_id][i].connect("hit", self, "_on_ghost_hit", [123]) # FIXME: Insert ghost ID
+				ghosts[player_id][i].connect("hit", self, "_on_ghost_hit", [ghosts[player_id][i].ghost_id])
 
 func disable_ghosts()->void:
 	for player_id in ghosts:
@@ -113,9 +113,9 @@ func _create_ghost_from_player(player)->void:
 		old_ghost.queue_free()
 	
 	add_child(ghost)
-	ghost.connect("hit", self, "_on_ghost_hit", [123]) # FIXME: Create and insert ghost ID
+	ghost.connect("hit", self, "_on_ghost_hit", [ghost.ghost_id])
 	
-	Server.send_own_ghost_record_to_client(player.player_id,player.gameplay_record)
+	Server.send_own_ghost_record_to_client(player.player_id, player.gameplay_record)
 	for client_id in players:
 		if client_id != player.player_id:
 			Server.send_enemy_ghost_record_to_client(client_id, player.player_id, player.gameplay_record)
