@@ -18,6 +18,7 @@ func create_room(room_name: String) -> int:
 	room.id = _room_id_counter
 	$ViewportContainer.add_child(room)
 	
+	# Workaround for getting the viewport to update
 	$ViewportContainer.rect_clip_content = true
 
 	room.connect("world_state_updated", self, "_on_world_state_update")
@@ -38,10 +39,13 @@ func create_room(room_name: String) -> int:
 
 func delete_room(room_id: int) -> void:
 	if _room_dic.has(room_id):
-		_room_dic[room_id].queue_free()
+		_room_dic[room_id].free()
 		_room_dic.erase(room_id)
 		room_count -= 1
 		Logger.info("Room removed (ID:%s)" % room_id, "rooms")
+		
+		# Same workaround as in create_room
+		$ViewportContainer.rect_clip_content = true
 
 
 func join_room(room_id: int, player_id: int) -> void:
