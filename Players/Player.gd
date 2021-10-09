@@ -49,7 +49,7 @@ func start_recording(ghost_index: int):
 	#index of the ghost
 	gameplay_record["G"] = ghost_index
 	#TODO: connect weapon information recording with actuall weapon system when ready
-	gameplay_record["W"] = Constants.GUN
+	gameplay_record["W"] = Enums.WeaponType.SHOOT
 	#array of gameplay data per frame
 	gameplay_record["F"] = []
 
@@ -57,7 +57,7 @@ func stop_recording():
 	_recording = false
 
 
-func _create_record_frame(time, position, rotation, attack = Constants.NONE, dash = Constants.NONE) -> Dictionary:
+func _create_record_frame(time, position, rotation, attack = Enums.AttackFrame.NONE, dash = Enums.DashFrame.NONE) -> Dictionary:
 	var frame = {"T": time, "P": position, "R": rotation, "A": attack, "D": dash}
 	return frame
 
@@ -137,7 +137,7 @@ func update_dash_state(dash_state):
 				var i = gameplay_record["F"].size() - 1
 				while gameplay_record["F"][i]["T"] > dash_state["T"] && i >= 0:
 					i -= 1
-				gameplay_record["F"][i]["D"] = Constants.DASH_START
+				gameplay_record["F"][i]["D"] = Enums.DashFrame.START
 		else:
 			Logger.info("Illegal dash", "movement validation")
 	#TODO: this does not work correctly as the client only sends dash_state 0 a long time after it actually has ended
@@ -146,7 +146,7 @@ func update_dash_state(dash_state):
 			var i = gameplay_record["F"].size() - 1
 			while gameplay_record["F"][i]["T"] > dash_state["T"] && i >= 0:
 				i -= 1
-			gameplay_record["F"][i]["D"] = Constants.DASH_END
+			gameplay_record["F"][i]["D"] = Enums.DashFrame.END
 
 
 func _valid_dash_start_time(time):
