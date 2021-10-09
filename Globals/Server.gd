@@ -145,6 +145,6 @@ func send_player_hit(player_id, hit_player_id):
 	rpc_id(player_id, "receive_player_hit", hit_player_id)
 
 
-func send_ghost_hit(player_id, hit_ghost_id):
+func send_ghost_hit(player_id, hit_ghost_player_owner, hit_ghost_id):
 	Logger.info("Sending ghost hit to client", "connection")
-	rpc_id(player_id, "receive_ghost_hit", hit_ghost_id)
+	rpc_id(player_id, "receive_ghost_hit", hit_ghost_player_owner, hit_ghost_id)

@@ -95,7 +95,7 @@ func enable_ghosts(replaced_ghost_indices:Dictionary) ->void:
 
 func add_ghost(ghost):
 	add_child(ghost)
-	ghost.connect("hit", self, "_on_ghost_hit", [ghost.ghost_index])
+	ghost.connect("hit", self, "_on_ghost_hit", [ghost.player_id, ghost.ghost_index])
 	ghost.connect("ghost_attack", self, "do_attack")
 
 
@@ -190,7 +190,7 @@ func _on_player_hit(hit_player_id):
 		Server.send_player_hit(player_id, hit_player_id)
 
 
-func _on_ghost_hit(ghost_id):
+func _on_ghost_hit(hit_ghost_player_owner, ghost_id):
 	Logger.info("Ghost hit!", "attacking")
 	for player_id in players:
-		Server.send_ghost_hit(player_id, ghost_id)
+		Server.send_ghost_hit(player_id, hit_ghost_player_owner, ghost_id)
