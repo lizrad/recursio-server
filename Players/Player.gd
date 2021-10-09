@@ -133,7 +133,7 @@ func update_dash_state(dash_state):
 			_collected_illegal_movement_if_not_dashing = Vector3.ZERO
 			
 			if _recording:
-				var i = gameplay_record["F"].size() - 1
+				var i = max(0,gameplay_record["F"].size() - 1)
 				while gameplay_record["F"][i]["T"] > dash_state["T"] && i >= 0:
 					i -= 1
 				gameplay_record["F"][i]["D"] = Enums.DashFrame.START
