@@ -8,9 +8,6 @@ var players = {}
 var ghosts = {}
 var player_states = {}
 
-#temporary very basic spawn point system
-var _possible_spawn_points = [Vector3(0, 0, 5), Vector3(0, 0, -5)]
-var _current_player_number = 0 # 0 or 1
 
 var level
 func reset():
@@ -34,17 +31,22 @@ func despawn_player(player_id):
 	for other_player_id in players:
 		Server.despawn_enemy_on_client(other_player_id, player_id)
 
-func reset_spawnpoints()->void:
+func reset_spawnpoints():
 	for player_id in players:
-		players[player_id].transform.origin = players[player_id].spawn_point
+		move_player_to_spawnpoint(player_id, 0)
+		
+		
+func move_player_to_spawnpoint(player_id, ghost_index:int)->void:
+	Logger.info("Moving player "+str(player_id)+" to spawnpoint "+str(ghost_index), "spawnpoints")
+	#Hotfix: otherwise it would overcorrect again
+	players[player_id].wait_for_player_to_correct=120
+	players[player_id].transform.origin = _get_spawn_point(players[player_id].game_id, ghost_index)
 
 func spawn_player(player_id, game_id):
-	var spawn_point = _find_next_spawn_point()
+	var spawn_point = _get_spawn_point(game_id, 0)
 	var player = _player_scene.instance()
 	player.game_id = game_id
 	player.player_id = player_id
-	player.transform.origin = spawn_point
-	player.spawn_point = spawn_point
 	ghosts[player_id] = []
 	add_child(player)
 
@@ -56,12 +58,13 @@ func spawn_player(player_id, game_id):
 		Server.spawn_enemy_on_client(other_player_id, player_id, spawn_point)
 
 	players[player_id] = player
-	Server.spawn_player_on_client(player_id, spawn_point)
+	move_player_to_spawnpoint(player_id, 0)
+	Server.spawn_player_on_client(player_id, spawn_point, game_id)
 
 
-func start_recording(ghost_index:int):
+func start_recording(ghost_indices:Dictionary):
 	for player_id in players:
-		players[player_id].start_recording(ghost_index)
+		players[player_id].start_recording(ghost_indices[player_id])
 
 
 func stop_recording()->void:
@@ -74,16 +77,18 @@ func create_ghosts()->void:
 		_create_ghost_from_player(players[player_id])
 
 
-func restart_ghosts()->void:
+func restart_ghosts(replaced_ghost_indices:Dictionary)->void:
 	for player_id in ghosts:
 			for i in range(ghosts[player_id].size()):
-				ghosts[player_id][i].start_replay(Server.get_server_time())
+				if replaced_ghost_indices[player_id]!=i:
+					ghosts[player_id][i].start_replay(Server.get_server_time())
 
 
-func enable_ghosts() ->void:
+func enable_ghosts(replaced_ghost_indices:Dictionary) ->void:
 	for player_id in ghosts:
 			for i in range(ghosts[player_id].size()):
-				add_child(ghosts[player_id][i])
+				if replaced_ghost_indices[player_id]!=i:
+					add_child(ghosts[player_id][i])
 
 func disable_ghosts()->void:
 	for player_id in ghosts:
@@ -115,11 +120,9 @@ func _create_ghost_from_player(player)->void:
 			Server.send_enemy_ghost_record_to_client(client_id, player.player_id, player.gameplay_record)
 
 
-func _find_next_spawn_point():
-	# TODO: Change index based on round number
-	var spawn_point = level.get_spawn_points(_current_player_number + 1)[0]
-	#spawnpoints currently just switch between two positions
-	_current_player_number = 1 - _current_player_number
+func _get_spawn_point(game_id, ghost_index):
+	var player_number = game_id + 1
+	var spawn_point = level.get_spawn_points(player_number)[ghost_index]
 	return spawn_point
 
 

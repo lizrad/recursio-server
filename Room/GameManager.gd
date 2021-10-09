@@ -40,7 +40,7 @@ var _round_timer: float = 0.0
 var _round_in_progress: bool = false
 
 
-var _game_phase_in_progress: bool = false
+var game_phase_in_progress: bool = false
 
 func _ready():
 	set_process(false)
@@ -50,7 +50,7 @@ func reset():
 	_round_index = 0
 	_round_timer = 0.0
 	_round_in_progress = false
-	_game_phase_in_progress = false
+	game_phase_in_progress = false
 	for i in range(level.get_capture_points().size()):
 		level.get_capture_points()[i].disconnect("capture_status_changed", self, "_on_capture_status_changed")
 		level.get_capture_points()[i].disconnect("captured", self, "_on_captured")
@@ -73,14 +73,14 @@ func _process(delta):
 		return
 	
 	# Game-Phase Start
-	if _round_timer >= time_to_game_phase and not _game_phase_in_progress:
-		_game_phase_in_progress = true
+	if _round_timer >= time_to_game_phase and not game_phase_in_progress:
+		game_phase_in_progress = true
 		_on_prep_phase_end()
 		return
 	
 	# Game-Phase/Round End
-	if _round_timer >= time_to_game_phase + _game_phase_length and _game_phase_in_progress:
-		_game_phase_in_progress = false
+	if _round_timer >= time_to_game_phase + _game_phase_length and game_phase_in_progress:
+		game_phase_in_progress = false
 		_on_round_end()
 		_round_timer = 0
 

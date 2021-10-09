@@ -16,7 +16,7 @@ var _waiting_for_dash := false
 var _collected_illegal_movement_if_not_dashing := Vector3.ZERO
 var _collected_illegal_movement := Vector3.ZERO
 var _dashing := false
-var _wait_for_player_to_correct = 0
+var wait_for_player_to_correct = 0
 
 var _recording = false
 var gameplay_record = {}
@@ -37,7 +37,7 @@ func reset():
 	_collected_illegal_movement_if_not_dashing= Vector3.ZERO
 	_collected_illegal_movement = Vector3.ZERO
 	_dashing = false
-	_wait_for_player_to_correct = 0
+	wait_for_player_to_correct = 0
 	can_move = false
 
 	
@@ -74,25 +74,24 @@ func _ready():
 
 
 func apply_player_state(player_state, physics_delta):
-	if _wait_for_player_to_correct <= 0:
+	if wait_for_player_to_correct <= 0:
 		_validate_position(player_state, physics_delta)
 	else:
-		_wait_for_player_to_correct -= 1
+		wait_for_player_to_correct -= 1
 
 	# TODO: validate attack data
-	
-	
+
+
 
 	var last_position
 	if last_player_state.empty():
 		last_position = transform.origin
 	else:
 		last_position = last_player_state["P"]
-	
+
 	# Ignore movement if player cannot move
 	if can_move:
 		var next_position = player_state["P"]
-	
 		var physics_velocity = (next_position - last_position) / physics_delta
 		var new_velocity = move_and_slide(player_state["V"])
 		acceleration = (new_velocity - velocity) / physics_delta
@@ -120,7 +119,7 @@ func correct_illegal_movement():
 		transform.origin -= _collected_illegal_movement
 		_collected_illegal_movement = Vector3.ZERO
 		#TODO: adapt to latency or something i dunno once we know it on server, just a random magic number that worked for now
-		_wait_for_player_to_correct = 120
+		wait_for_player_to_correct = 120
 
 
 func update_dash_state(dash_state):
