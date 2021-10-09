@@ -104,7 +104,9 @@ func _on_capture_point_team_changed(team_id, capture_point, room_id):
 
 func _on_capture_point_captured(team_id, capture_point, room_id):
 	var room = _room_dic[room_id]
-	var capturing_player_id = room.game_id_to_player_id[team_id]
+	var capturing_player_id = -1
+	if team_id != -1:
+		capturing_player_id = room.game_id_to_player_id[team_id]
 	for player_id in room.get_players().keys():
 		_server.send_capture_point_captured(player_id, capturing_player_id, capture_point)
 
@@ -119,7 +121,9 @@ func _on_capture_point_status_changed(capture_progress, team_id, capture_point, 
 
 func _on_capture_point_capture_lost(team_id, capture_point, room_id):
 	var room = _room_dic[room_id]
-	var capturing_player_id = room.game_id_to_player_id[team_id]
+	var capturing_player_id = -1
+	if team_id != -1:
+		capturing_player_id = room.game_id_to_player_id[team_id]
 	for player_id in room.get_players().keys():
 		_server.send_capture_point_capture_lost(player_id, capturing_player_id, capture_point)
 

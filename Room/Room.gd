@@ -47,6 +47,7 @@ func _on_round_ended(_round_index: int) -> void:
 	_player_manager.stop_recording()
 	_player_manager.create_ghosts()
 	_player_manager.disable_ghosts()
+	_player_manager.reset_spawnpoints()
 	_player_manager.set_players_can_move(false)
 
 func add_player(player_id: int) -> void:

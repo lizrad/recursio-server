@@ -46,7 +46,7 @@ func _ready():
 	set_process(false)
 
 
-func _reset():
+func reset():
 	_round_index = 0
 	_round_timer = 0.0
 	_round_in_progress = false
@@ -124,9 +124,12 @@ func _on_round_start():
 # Called when the preperation phase ends
 func _on_prep_phase_end():
 	Logger.info("Prep Phase "+ str(_round_index) + " ended", "gameplay")
+	level.toggle_capture_points(true)
 	emit_signal("prep_phase_ended", _round_index)
 
 # Called when the round ends
 func _on_round_end():
 	Logger.info("Round " + str(_round_index) + " ended", "gameplay")
+	level.reset()
+	level.toggle_capture_points(false)
 	emit_signal("round_ended", _round_index)

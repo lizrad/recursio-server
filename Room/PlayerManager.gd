@@ -19,7 +19,6 @@ func reset():
 			for i in range(ghosts[player_id].size()):
 				ghosts[player_id][i].queue_free()
 			ghosts[player_id].clear()
-	ghosts.clear()
 	player_states.clear()
 
 func despawn_player(player_id):

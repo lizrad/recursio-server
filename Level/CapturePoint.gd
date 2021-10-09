@@ -6,6 +6,7 @@ signal captured(team_id)
 signal capture_status_changed(capture_progress, team_id)
 signal capture_lost(team_id)
 
+var active = true
 var capture_progress: float = 0
 # Team that currently 'owns' the capturing point
 var capture_team: int = -1
@@ -26,25 +27,32 @@ var _capture_time: float = 3.0
 func _ready():
 	$Area.connect("body_entered", self, "_on_body_entered_area")
 	$Area.connect("body_exited", self, "_on_body_exited_area")
+
 	_capture_speed = Constants.get_value("capture","capture_speed")
 	_recapture_speed = Constants.get_value("capture","recapture_speed")
 	_release_speed = Constants.get_value("capture","release_speed")
 	_capture_time = Constants.get_value("capture","capture_time")
 
+
+
 func reset():
-	capture_progress = 0
+	if _is_captured:
+		emit_signal("capture_lost", capture_team)
+	_is_captured = false
+	_capturing_entities[0] = 0
+	_capturing_entities[1] = 0
 	capture_team = -1
-	_current_capture_team = -1
-	_being_captured = false
-	_capturing_paused = false
-	_is_captured= false
-	for i in range(_capturing_entities.size()):
-		_capturing_entities[i]=0
+	capture_progress = 0
+	_check_capturing_status()
+	emit_signal("capture_team_changed", -1)
+	emit_signal("capture_status_changed",0,-1)
 
 func _process(delta):
+	if not active:
+		return
 	if _capturing_paused:
 		return
-
+		
 	if _being_captured:
 		if _current_capture_team == capture_team:
 			# Current team increases the capture process
@@ -56,13 +64,6 @@ func _process(delta):
 		# No team is capturing -> progress decreases
 		_release(delta / _capture_time)
 
-
-func reset_point() -> void:
-	_capturing_entities[0] = 0
-	_capturing_entities[1] = 0
-	capture_team = -1
-	capture_progress = 0
-	_check_capturing_status()
 
 
 func _capture(delta: float):
@@ -97,17 +98,8 @@ func _release(delta: float):
 		emit_signal("capture_status_changed", capture_progress, capture_team)
 	elif capture_team != -1:
 		# Process reached zero with no team currently capturing
-		_reset_capture_point()
+		reset()
 		emit_signal("capture_status_changed", capture_progress, capture_team)
-
-
-func _reset_capture_point():
-	_capturing_entities[0] = 0
-	_capturing_entities[1] = 0
-	capture_team = -1
-	capture_progress = 0
-	_check_capturing_status()
-	emit_signal("capture_team_changed", -1)
 
 
 func _switch_capturing_teams(new_team: int):
@@ -138,4 +130,5 @@ func _on_body_exited_area(body):
 
 func stop_capturing(game_id: int):
 	_capturing_entities[game_id] -= 1
+	_capturing_entities[game_id] = max(0, _capturing_entities[game_id])
 	_check_capturing_status()
