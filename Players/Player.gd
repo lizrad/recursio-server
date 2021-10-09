@@ -20,9 +20,9 @@ var wait_for_player_to_correct = 0
 
 var _recording = false
 var gameplay_record = {}
-var spawn_point := Vector3.ZERO
 
 var can_move: bool = false
+
 
 func reset():
 	_recording=false
@@ -230,3 +230,9 @@ func _on_dash_confirmation_timeout():
 		_waiting_for_dash = false
 		_collected_illegal_movement += _collected_illegal_movement_if_not_dashing
 		_collected_illegal_movement_if_not_dashing = Vector3.ZERO
+
+
+# TODO: Move partially to CharacterBase?
+func receive_hit():
+	emit_signal("hit")
+	global_transform.origin = spawn_point

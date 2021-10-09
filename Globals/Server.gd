@@ -62,7 +62,7 @@ func despawn_enemy_on_client(player_id, enemy_id):
 	rpc_id(player_id, "despawn_enemy", enemy_id)
 
 
-func send_own_ghost_record_to_client( player_id, gameplay_record):
+func send_own_ghost_record_to_client(player_id, gameplay_record):
 	rpc_id(player_id, "receive_own_ghost_record", gameplay_record)
 	
 func send_enemy_ghost_record_to_client(player_id, enemy_id, gameplay_record):
@@ -113,7 +113,8 @@ remote func receive_dash_state(dash_state):
 remote func receive_action_trigger(action):
 	Logger.info("received action trigger %s" %[action], "connection")
 	var player_id = get_tree().get_rpc_sender_id()
-	# TODO: handle action depending on type:  {"A": Enums.ActionType, "T": Server.get_server_time()}
+	var room_id = _player_room_dic[player_id]
+	_room_manager.get_room(room_id).handle_player_action(player_id, action)
 
 
 # Sends the current world state (of the players room) to the player
@@ -127,11 +128,23 @@ func send_round_start_to_client(player_id, round_index, latency_delay):
 	Logger.info("Sending round start to client", "connection")
 	rpc_id(player_id, "receive_round_start", round_index, latency_delay, get_server_time())
 
+
 # Notifies a player that a specific round has ended
 func send_round_end_to_client(player_id, round_index):
 	Logger.info("Sending round end to client", "connection")
 	rpc_id(player_id, "receive_round_end", round_index)
 
+
 func send_game_result(player_id, winning_player_id):
 	Logger.info("Sending game result to client", "connection")
 	rpc_id(player_id, "receive_game_result", winning_player_id)
+
+
+func send_player_hit(player_id, hit_player_id):
+	Logger.info("Sending player hit to client", "connection")
+	rpc_id(player_id, "receive_player_hit", hit_player_id)
+
+
+func send_ghost_hit(player_id, hit_ghost_id):
+	Logger.info("Sending ghost hit to client", "connection")
+	rpc_id(player_id, "receive_ghost_hit", hit_ghost_id)

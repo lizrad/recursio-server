@@ -42,6 +42,7 @@ func move_player_to_spawnpoint(player_id, ghost_index:int)->void:
 	players[player_id].wait_for_player_to_correct=120
 	players[player_id].transform.origin = _get_spawn_point(players[player_id].game_id, ghost_index)
 
+
 func spawn_player(player_id, game_id):
 	var spawn_point = _get_spawn_point(game_id, 0)
 	var player = _player_scene.instance()
@@ -49,6 +50,7 @@ func spawn_player(player_id, game_id):
 	player.player_id = player_id
 	ghosts[player_id] = []
 	add_child(player)
+	player.connect("hit", self, "_on_player_hit", [player_id])
 
 	#triggering spawns of enemies on all clients
 	for other_player_id in players:
@@ -89,11 +91,13 @@ func enable_ghosts(replaced_ghost_indices:Dictionary) ->void:
 			for i in range(ghosts[player_id].size()):
 				if replaced_ghost_indices[player_id]!=i:
 					add_child(ghosts[player_id][i])
+					ghosts[player_id][i].connect("hit", self, "_on_ghost_hit", [ghosts[player_id][i].ghost_id])
 
 func disable_ghosts()->void:
 	for player_id in ghosts:
 			for i in range(ghosts[player_id].size()):
 				remove_child(ghosts[player_id][i])
+				ghosts[player_id][i].disconnect("hit", self, "_on_ghost_hit")
 
 
 func set_players_can_move(can_move : bool) -> void:
@@ -114,7 +118,9 @@ func _create_ghost_from_player(player)->void:
 		old_ghost.queue_free()
 	
 	add_child(ghost)
-	Server.send_own_ghost_record_to_client(player.player_id,player.gameplay_record)
+	ghost.connect("hit", self, "_on_ghost_hit", [ghost.ghost_id])
+	
+	Server.send_own_ghost_record_to_client(player.player_id, player.gameplay_record)
 	for client_id in players:
 		if client_id != player.player_id:
 			Server.send_enemy_ghost_record_to_client(client_id, player.player_id, player.gameplay_record)
@@ -137,6 +143,21 @@ func update_player_state(player_id, player_state):
 		player_states[player_id] = player_state
 
 
+func handle_player_action(player_id, action_state):
+	# {"A": Constants.ActionType, "T": Server.get_server_time()}
+	Logger.info("Handling action of type " + str(action_state["A"]))
+	
+	var attacker = players[player_id]
+	var attack_transform = attacker.global_transform
+	
+	# TODO: Make this generic; hardcoded to HiscanShot only for now
+	if action_state["A"] == Enums.ActionType.SHOOT:
+		var spawn = preload("res://Shared/Attacks/Shots/HitscanShot.tscn").instance()
+		spawn.initialize(attacker)
+		spawn.global_transform = attack_transform
+		add_child(spawn)
+
+
 func update_dash_state(player_id, dash_state):
 	players[player_id].update_dash_state(dash_state)
 
@@ -145,3 +166,15 @@ func _physics_process(delta):
 	for player_id in player_states:
 		if players.has(player_id):
 			players[player_id].apply_player_state(player_states[player_id], delta)
+
+
+func _on_player_hit(hit_player_id):
+	Logger.info("Player hit!", "attacking")
+	for player_id in players:
+		Server.send_player_hit(player_id, hit_player_id)
+
+
+func _on_ghost_hit(ghost_id):
+	Logger.info("Ghost hit!", "attacking")
+	for player_id in players:
+		Server.send_ghost_hit(player_id, ghost_id)
