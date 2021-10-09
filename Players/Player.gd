@@ -19,6 +19,7 @@ var _dashing := false
 var wait_for_player_to_correct = 0
 
 var _recording = false
+var action_last_frame = Enums.AttackFrame.NONE
 var gameplay_record = {}
 
 var can_move: bool = false
@@ -101,8 +102,9 @@ func apply_player_state(player_state, physics_delta):
 
 	if _recording:
 		gameplay_record["F"].append(
-			_create_record_frame(Server.get_server_time(), transform.origin, rotation.y)
+			_create_record_frame(Server.get_server_time(), transform.origin, rotation.y, action_last_frame)
 		)
+		action_last_frame = Enums.AttackFrame.NONE
 
 	last_player_state = player_state
 

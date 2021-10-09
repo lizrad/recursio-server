@@ -156,15 +156,18 @@ func update_player_state(player_id, player_state):
 func handle_player_action(player_id, action_state):
 	# {"A": Constants.ActionType, "T": Server.get_server_time()}
 	Logger.info("Handling action of type " + str(action_state["A"]))
-	do_attack(players[player_id], action_state)
+	do_attack(players[player_id], action_state["A"])
 
 
-func do_attack(attacker, action_state):
-	if action_state["A"] == Enums.ActionType.SHOOT:
+func do_attack(attacker, action_type):
+	if action_type == Enums.ActionType.SHOOT:
 		var spawn = preload("res://Shared/Attacks/Shots/HitscanShot.tscn").instance()
 		spawn.initialize(attacker)
 		spawn.global_transform = attacker.global_transform
 		add_child(spawn)
+	
+		if "action_last_frame" in attacker:
+			attacker.action_last_frame = Enums.AttackFrame.SHOOT_START
 	
 
 
