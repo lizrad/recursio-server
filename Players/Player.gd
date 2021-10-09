@@ -231,3 +231,8 @@ func _on_dash_confirmation_timeout():
 		_waiting_for_dash = false
 		_collected_illegal_movement += _collected_illegal_movement_if_not_dashing
 		_collected_illegal_movement_if_not_dashing = Vector3.ZERO
+
+
+func receive_hit():
+	Logger.log("Player hit!", "attacking")
+	# TODO: Reset to spawn position

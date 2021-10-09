@@ -134,6 +134,21 @@ func update_player_state(player_id, player_state):
 		player_states[player_id] = player_state
 
 
+func handle_player_action(player_id, action_state):
+	# {"A": Constants.ActionType, "T": Server.get_server_time()}
+	Logger.info("Handling action of type " + str(action_state["A"]))
+	
+	var attacker = players[player_id]
+	var attack_transform = attacker.global_transform
+	
+	# TODO: Make this generic; hardcoded to HiscanShot only for now
+	if action_state["A"] == Enums.ActionType.SHOOT:
+		var spawn = preload("res://Shared/Attacks/Shots/HitscanShot.tscn").instance()
+		spawn.initialize(attacker)
+		spawn.global_transform = attack_transform
+		add_child(spawn)
+
+
 func update_dash_state(player_id, dash_state):
 	players[player_id].update_dash_state(dash_state)
 

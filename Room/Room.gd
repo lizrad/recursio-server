@@ -89,6 +89,10 @@ func update_dash_state(player_id, dash_state):
 	_player_manager.update_dash_state(player_id, dash_state)
 
 
+func handle_player_action(player_id, action_state):
+	_player_manager.handle_player_action(player_id, action_state)
+
+
 func get_players():
 	return _player_manager.players
 

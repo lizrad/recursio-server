@@ -113,7 +113,8 @@ remote func receive_dash_state(dash_state):
 remote func receive_action_trigger(action):
 	Logger.info("received action trigger %s" %[action], "connection")
 	var player_id = get_tree().get_rpc_sender_id()
-	# TODO: handle action depending on type:  {"A": Enums.ActionType, "T": Server.get_server_time()}
+	var room_id = _player_room_dic[player_id]
+	_room_manager.get_room(room_id).handle_player_action(player_id, action)
 
 
 # Sends the current world state (of the players room) to the player
