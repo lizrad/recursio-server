@@ -20,6 +20,9 @@ func reset():
 				ghosts[player_id][i].queue_free()
 			ghosts[player_id].clear()
 	player_states.clear()
+	for player_id in players:
+		players[player_id].reset()
+	reset_spawnpoints()
 
 func despawn_player(player_id):
 	player_states.erase(player_id)

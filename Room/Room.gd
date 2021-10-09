@@ -30,6 +30,7 @@ func _ready():
 
 
 func reset():
+	Logger.info("Full reset triggered.","gameplay")
 	_player_manager.reset()
 	_game_manager.reset()
 	_level.reset()
@@ -62,6 +63,7 @@ func add_player(player_id: int) -> void:
 		start_game()
 
 func start_game():
+	
 	_game_manager.start_game()
 	
 func remove_player(player_id: int) -> void:

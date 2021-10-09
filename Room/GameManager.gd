@@ -51,6 +51,11 @@ func reset():
 	_round_timer = 0.0
 	_round_in_progress = false
 	_game_phase_in_progress = false
+	for i in range(level.get_capture_points().size()):
+		level.get_capture_points()[i].disconnect("capture_status_changed", self, "_on_capture_status_changed")
+		level.get_capture_points()[i].disconnect("captured", self, "_on_captured")
+		level.get_capture_points()[i].disconnect("capture_team_changed",self, "_on_capture_team_changed")
+		level.get_capture_points()[i].disconnect("capture_lost",self, "_on_capture_lost")
 	set_process(false)
 	
 # Game-State behavior 
@@ -82,13 +87,13 @@ func _process(delta):
 
 # Called when the room is full
 func start_game():
+	Logger.info("Game started", "gameplay")
 	for i in range(level.get_capture_points().size()):
 		level.get_capture_points()[i].connect("capture_status_changed", self, "_on_capture_status_changed", [i])
 		level.get_capture_points()[i].connect("captured", self, "_on_captured", [i])
 		level.get_capture_points()[i].connect("capture_team_changed",self, "_on_capture_team_changed", [i])
 		level.get_capture_points()[i].connect("capture_lost",self, "_on_capture_lost", [i])
-	Logger.info("Game started", "gameplay")
-	# DEGUB: Replace with 'All players are ready' functionality
+	# DEBUG: Replace with 'All players are ready' functionality
 	yield (get_tree().create_timer(3), "timeout")
 	set_process(true)
 
@@ -131,5 +136,4 @@ func _on_prep_phase_end():
 func _on_round_end():
 	Logger.info("Round " + str(_round_index) + " ended", "gameplay")
 	level.reset()
-	level.toggle_capture_points(false)
 	emit_signal("round_ended", _round_index)

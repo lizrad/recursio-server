@@ -24,6 +24,23 @@ var spawn_point := Vector3.ZERO
 
 var can_move: bool = false
 
+func reset():
+	_recording=false
+	gameplay_record.clear()
+	velocity = Vector3.ZERO
+	acceleration = Vector3.ZERO
+	rotation_velocity = 0.0
+	last_player_state = {}
+	for i in range(dash_start_times.size()):
+		dash_start_times[i]=-1
+	_waiting_for_dash = false
+	_collected_illegal_movement_if_not_dashing= Vector3.ZERO
+	_collected_illegal_movement = Vector3.ZERO
+	_dashing = false
+	_wait_for_player_to_correct = 0
+	can_move = false
+
+	
 func start_recording(ghost_index: int):
 	gameplay_record.clear()
 	_recording = true
@@ -35,7 +52,6 @@ func start_recording(ghost_index: int):
 	gameplay_record["W"] = Constants.GUN
 	#array of gameplay data per frame
 	gameplay_record["F"] = []
-
 
 func stop_recording():
 	_recording = false
