@@ -237,4 +237,3 @@ func _on_dash_confirmation_timeout():
 # TODO: Move partially to CharacterBase?
 func receive_hit():
 	emit_signal("hit")
-	global_transform.origin = spawn_point
