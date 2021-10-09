@@ -95,7 +95,7 @@ func enable_ghosts(replaced_ghost_indices:Dictionary) ->void:
 
 func add_ghost(ghost):
 	add_child(ghost)
-	ghost.connect("hit", self, "_on_ghost_hit", [ghost.ghost_id])
+	ghost.connect("hit", self, "_on_ghost_hit", [ghost.ghost_index])
 	ghost.connect("ghost_attack", self, "do_attack")
 
 
