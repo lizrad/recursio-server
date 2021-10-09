@@ -90,14 +90,25 @@ func enable_ghosts(replaced_ghost_indices:Dictionary) ->void:
 	for player_id in ghosts:
 			for i in range(ghosts[player_id].size()):
 				if replaced_ghost_indices[player_id]!=i:
-					add_child(ghosts[player_id][i])
-					ghosts[player_id][i].connect("hit", self, "_on_ghost_hit", [ghosts[player_id][i].ghost_id])
+					add_ghost(ghosts[player_id][i])
+
+
+func add_ghost(ghost):
+	add_child(ghost)
+	ghost.connect("hit", self, "_on_ghost_hit", [ghost.ghost_id])
+	ghost.connect("ghost_attack", self, "do_attack")
+
+
+func remove_ghost(ghost):
+	remove_child(ghost)
+	ghost.disconnect("hit", self, "_on_ghost_hit")
+	ghost.disconnect("ghost_attack", self, "do_attack")
+
 
 func disable_ghosts()->void:
 	for player_id in ghosts:
 			for i in range(ghosts[player_id].size()):
-				remove_child(ghosts[player_id][i])
-				ghosts[player_id][i].disconnect("hit", self, "_on_ghost_hit")
+				remove_ghost(ghosts[player_id][i])
 
 
 func set_players_can_move(can_move : bool) -> void:
@@ -117,8 +128,7 @@ func _create_ghost_from_player(player)->void:
 		ghosts[player.player_id][player.gameplay_record["G"]] = ghost
 		old_ghost.queue_free()
 	
-	add_child(ghost)
-	ghost.connect("hit", self, "_on_ghost_hit", [ghost.ghost_id])
+	add_ghost(ghost)
 	
 	Server.send_own_ghost_record_to_client(player.player_id, player.gameplay_record)
 	for client_id in players:
@@ -146,16 +156,16 @@ func update_player_state(player_id, player_state):
 func handle_player_action(player_id, action_state):
 	# {"A": Constants.ActionType, "T": Server.get_server_time()}
 	Logger.info("Handling action of type " + str(action_state["A"]))
-	
-	var attacker = players[player_id]
-	var attack_transform = attacker.global_transform
-	
-	# TODO: Make this generic; hardcoded to HiscanShot only for now
+	do_attack(players[player_id], action_state)
+
+
+func do_attack(attacker, action_state):
 	if action_state["A"] == Enums.ActionType.SHOOT:
 		var spawn = preload("res://Shared/Attacks/Shots/HitscanShot.tscn").instance()
 		spawn.initialize(attacker)
-		spawn.global_transform = attack_transform
+		spawn.global_transform = attacker.global_transform
 		add_child(spawn)
+	
 
 
 func update_dash_state(player_id, dash_state):
