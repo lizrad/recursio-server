@@ -119,6 +119,7 @@ func set_players_can_move(can_move : bool) -> void:
 func _create_ghost_from_player(player)->void:
 	var ghost = _ghost_scene.instance()
 	ghost.init(player.gameplay_record)
+	ghost.spawn_point = player.spawn_point
 	ghost.game_id = player.game_id
 	ghost.player_id = player.player_id
 	if ghosts[player.player_id].size()<=Constants.get_value("ghosts", "max_amount"):
