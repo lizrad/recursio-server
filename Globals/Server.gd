@@ -128,11 +128,23 @@ func send_round_start_to_client(player_id, round_index, latency_delay):
 	Logger.info("Sending round start to client", "connection")
 	rpc_id(player_id, "receive_round_start", round_index, latency_delay, get_server_time())
 
+
 # Notifies a player that a specific round has ended
 func send_round_end_to_client(player_id, round_index):
 	Logger.info("Sending round end to client", "connection")
 	rpc_id(player_id, "receive_round_end", round_index)
 
+
 func send_game_result(player_id, winning_player_id):
 	Logger.info("Sending game result to client", "connection")
 	rpc_id(player_id, "receive_game_result", winning_player_id)
+
+
+func send_player_hit(player_id, hit_player_id):
+	Logger.info("Sending player hit to client", "connection")
+	rpc_id(player_id, "receive_player_hit", hit_player_id)
+
+
+func send_ghost_hit(player_id, hit_ghost_id):
+	Logger.info("Sending ghost hit to client", "connection")
+	rpc_id(player_id, "receive_ghost_hit", hit_ghost_id)

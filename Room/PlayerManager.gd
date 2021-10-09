@@ -37,6 +37,7 @@ func despawn_player(player_id):
 func reset_spawnpoints()->void:
 	for player_id in players:
 		players[player_id].transform.origin = players[player_id].spawn_point
+	
 
 func spawn_player(player_id, game_id):
 	var spawn_point = _find_next_spawn_point()
@@ -47,6 +48,7 @@ func spawn_player(player_id, game_id):
 	player.spawn_point = spawn_point
 	ghosts[player_id] = []
 	add_child(player)
+	player.connect("hit", self, "_on_player_hit", [player_id])
 
 	#triggering spawns of enemies on all clients
 	for other_player_id in players:
@@ -84,11 +86,13 @@ func enable_ghosts() ->void:
 	for player_id in ghosts:
 			for i in range(ghosts[player_id].size()):
 				add_child(ghosts[player_id][i])
+				ghosts[player_id][i].connect("hit", self, "_on_ghost_hit", [123]) # FIXME: Insert ghost ID
 
 func disable_ghosts()->void:
 	for player_id in ghosts:
 			for i in range(ghosts[player_id].size()):
 				remove_child(ghosts[player_id][i])
+				ghosts[player_id][i].disconnect("hit", self, "_on_ghost_hit")
 
 
 func set_players_can_move(can_move : bool) -> void:
@@ -109,6 +113,8 @@ func _create_ghost_from_player(player)->void:
 		old_ghost.queue_free()
 	
 	add_child(ghost)
+	ghost.connect("hit", self, "_on_ghost_hit", [123]) # FIXME: Create and insert ghost ID
+	
 	Server.send_own_ghost_record_to_client(player.player_id,player.gameplay_record)
 	for client_id in players:
 		if client_id != player.player_id:
@@ -157,3 +163,15 @@ func _physics_process(delta):
 	for player_id in player_states:
 		if players.has(player_id):
 			players[player_id].apply_player_state(player_states[player_id], delta)
+
+
+func _on_player_hit(hit_player_id):
+	Logger.info("Player hit!", "attacking")
+	for player_id in players:
+		Server.send_player_hit(player_id, hit_player_id)
+
+
+func _on_ghost_hit(ghost_id):
+	Logger.info("Ghost hit!", "attacking")
+	for player_id in players:
+		Server.send_ghost_hit(player_id, ghost_id)
