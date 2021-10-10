@@ -89,13 +89,13 @@ func restart_ghosts()->void:
 func enable_ghosts() ->void:
 	for player_id in ghosts:
 			for i in ghosts[player_id]:
-				if players[player_id].ghost_index!=i:
+				if players[player_id].ghost_index != i and not ghosts[player_id][i].is_inside_tree():
 					add_ghost(ghosts[player_id][i])
 
 
 func add_ghost(ghost):
 	add_child(ghost)
-	ghost.connect("hit", self, "_on_ghost_hit", [ghost.ghost_index])
+	ghost.connect("hit", self, "_on_ghost_hit", [ghost.ghost_index, ghost.player_id])
 	ghost.connect("ghost_attack", self, "do_attack")
 
 
@@ -186,10 +186,10 @@ func _on_player_hit(hit_player_id):
 		Server.send_player_hit(player_id, hit_player_id)
 
 
-func _on_ghost_hit(ghost_id):
+func _on_ghost_hit(ghost_id, owning_player_id):
 	Logger.info("Ghost hit!", "attacking")
 	for player_id in players:
-		Server.send_ghost_hit(player_id, ghost_id)
+		Server.send_ghost_hit(player_id, owning_player_id, ghost_id)
 
 func set_ghost_index(player_id, ghost_index):
 	Logger.info("Setting ghost index for player "+str(player_id)+" to "+str(ghost_index),"ghost_picking")
