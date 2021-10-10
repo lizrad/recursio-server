@@ -160,13 +160,11 @@ func handle_player_action(player_id, action_state):
 
 
 func do_attack(attacker, action_type):
-	if action_type == Enums.ActionType.SHOOT:
-		var spawn = preload("res://Shared/Attacks/Shots/HitscanShot.tscn").instance()
-		spawn.initialize(attacker)
-		spawn.global_transform = attacker.global_transform
-		add_child(spawn)
+	Actions.types_to_actions[action_type].set_active(true, attacker, get_tree())
 	
-		if "action_last_frame" in attacker:
+	# TODO: Consider how to generalize this
+	if "action_last_frame" in attacker:
+		if action_type == Enums.ActionType.SHOOT:
 			attacker.action_last_frame = Enums.AttackFrame.SHOOT_START
 
 
