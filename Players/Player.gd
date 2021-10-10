@@ -40,9 +40,10 @@ func reset():
 	_dashing = false
 	wait_for_player_to_correct = 0
 	can_move = false
+	ghost_index = 0
 
 	
-func start_recording(ghost_index: int):
+func start_recording():
 	gameplay_record.clear()
 	_recording = true
 	#time the recording started

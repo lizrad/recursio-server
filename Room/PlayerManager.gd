@@ -8,12 +8,11 @@ var players = {}
 var ghosts = {}
 var player_states = {}
 
-
 var level
 func reset():
 	stop_recording()
 	for player_id in ghosts:
-			for i in range(ghosts[player_id].size()):
+			for i in ghosts[player_id]:
 				ghosts[player_id][i].queue_free()
 			ghosts[player_id].clear()
 	player_states.clear()
@@ -23,7 +22,7 @@ func reset():
 
 func despawn_player(player_id):
 	player_states.erase(player_id)
-	for i in range(ghosts[player_id].size()):
+	for i in ghosts[player_id]:
 		ghosts[player_id][i].queue_free()
 	ghosts.erase(player_id)
 	players[player_id].queue_free()
@@ -33,14 +32,14 @@ func despawn_player(player_id):
 
 func reset_spawnpoints():
 	for player_id in players:
-		move_player_to_spawnpoint(player_id, 0)
+		move_player_to_spawnpoint(player_id)
 		
 		
-func move_player_to_spawnpoint(player_id, ghost_index:int)->void:
-	Logger.info("Moving player "+str(player_id)+" to spawnpoint "+str(ghost_index), "spawnpoints")
+func move_player_to_spawnpoint(player_id)->void:
+	Logger.info("Moving player "+str(player_id)+" to spawnpoint "+str(players[player_id].ghost_index), "spawnpoints")
 	#Hotfix: otherwise it would overcorrect again
 	players[player_id].wait_for_player_to_correct=120
-	players[player_id].transform.origin = _get_spawn_point(players[player_id].game_id, ghost_index)
+	players[player_id].transform.origin = _get_spawn_point(players[player_id].game_id, players[player_id].ghost_index)
 
 
 func spawn_player(player_id, game_id):
@@ -48,7 +47,8 @@ func spawn_player(player_id, game_id):
 	var player = _player_scene.instance()
 	player.game_id = game_id
 	player.player_id = player_id
-	ghosts[player_id] = []
+	player.ghost_index = 0
+	ghosts[player_id] = {}
 	add_child(player)
 	player.connect("hit", self, "_on_player_hit", [player_id])
 
@@ -60,13 +60,13 @@ func spawn_player(player_id, game_id):
 		Server.spawn_enemy_on_client(other_player_id, player_id, spawn_point)
 
 	players[player_id] = player
-	move_player_to_spawnpoint(player_id, 0)
+	move_player_to_spawnpoint(player_id)
 	Server.spawn_player_on_client(player_id, spawn_point, game_id)
 
 
-func start_recording(ghost_indices:Dictionary):
+func start_recording():
 	for player_id in players:
-		players[player_id].start_recording(ghost_indices[player_id])
+		players[player_id].start_recording()
 
 
 func stop_recording()->void:
@@ -79,23 +79,23 @@ func create_ghosts()->void:
 		_create_ghost_from_player(players[player_id])
 
 
-func restart_ghosts(replaced_ghost_indices:Dictionary)->void:
+func restart_ghosts()->void:
 	for player_id in ghosts:
-			for i in range(ghosts[player_id].size()):
-				if replaced_ghost_indices[player_id]!=i:
+			for i in ghosts[player_id]:
+				if players[player_id].ghost_index!=i:
 					ghosts[player_id][i].start_replay(Server.get_server_time())
 
 
-func enable_ghosts(replaced_ghost_indices:Dictionary) ->void:
+func enable_ghosts() ->void:
 	for player_id in ghosts:
-			for i in range(ghosts[player_id].size()):
-				if replaced_ghost_indices[player_id]!=i:
+			for i in ghosts[player_id]:
+				if players[player_id].ghost_index!=i:
 					add_ghost(ghosts[player_id][i])
 
 
 func add_ghost(ghost):
 	add_child(ghost)
-	ghost.connect("hit", self, "_on_ghost_hit", [ghost.player_id, ghost.ghost_index])
+	ghost.connect("hit", self, "_on_ghost_hit", [ghost.ghost_index])
 	ghost.connect("ghost_attack", self, "do_attack")
 
 
@@ -107,8 +107,9 @@ func remove_ghost(ghost):
 
 func disable_ghosts()->void:
 	for player_id in ghosts:
-			for i in range(ghosts[player_id].size()):
-				remove_ghost(ghosts[player_id][i])
+			for i in ghosts[player_id]:
+				if i != players[player_id].ghost_index:
+					remove_ghost(ghosts[player_id][i])
 
 
 func set_players_can_move(can_move : bool) -> void:
@@ -122,12 +123,10 @@ func _create_ghost_from_player(player)->void:
 	ghost.spawn_point = player.spawn_point
 	ghost.game_id = player.game_id
 	ghost.player_id = player.player_id
-	if ghosts[player.player_id].size()<=Constants.get_value("ghosts", "max_amount"):
-		ghosts[player.player_id].append(ghost)
-	else:
-		var old_ghost = ghosts[player.player_id][player.gameplay_record["G"]]
-		ghosts[player.player_id][player.gameplay_record["G"]] = ghost
-		old_ghost.queue_free()
+
+	if  ghosts[player.player_id].has([player.gameplay_record["G"]]):
+		ghosts[player.player_id][player.gameplay_record["G"]].queue_free()
+	ghosts[player.player_id][player.gameplay_record["G"]] = ghost
 	
 	add_ghost(ghost)
 	
@@ -169,7 +168,6 @@ func do_attack(attacker, action_type):
 	
 		if "action_last_frame" in attacker:
 			attacker.action_last_frame = Enums.AttackFrame.SHOOT_START
-	
 
 
 func update_dash_state(player_id, dash_state):
@@ -184,13 +182,25 @@ func _physics_process(delta):
 
 func _on_player_hit(hit_player_id):
 	Logger.info("Player hit!", "attacking")
-	move_player_to_spawnpoint(hit_player_id, 0)  # FIXME: Use correct spawn point
-	
 	for player_id in players:
 		Server.send_player_hit(player_id, hit_player_id)
 
 
-func _on_ghost_hit(hit_ghost_player_owner, ghost_id):
+func _on_ghost_hit(ghost_id):
 	Logger.info("Ghost hit!", "attacking")
 	for player_id in players:
-		Server.send_ghost_hit(player_id, hit_ghost_player_owner, ghost_id)
+		Server.send_ghost_hit(player_id, ghost_id)
+
+func set_ghost_index(player_id, ghost_index):
+	Logger.info("Setting ghost index for player "+str(player_id)+" to "+str(ghost_index),"ghost_picking")
+	players[player_id].ghost_index = ghost_index
+
+func propagate_player_picks():
+	Logger.info("Propagating ghost picks", "ghost_picking")
+	for player_id in players:
+		var player_pick = players[player_id].ghost_index
+		var enemy_picks = {}
+		for enemy_id in players:
+			if enemy_id!=player_id:
+				enemy_picks[enemy_id]=players[enemy_id].ghost_index
+		Server.send_ghost_pick(player_id, player_pick, enemy_picks)

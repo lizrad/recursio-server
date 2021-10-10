@@ -22,9 +22,10 @@ var game_id_to_player_id = {}
 
 func _ready():
 	_world_state_manager.connect("world_state_updated", self, "_on_world_state_update")
-	_game_manager.connect("prep_phase_ended",self, "_on_prep_phase_end")
+	_game_manager.connect("round_started",self, "_on_round_started")
+	_game_manager.connect("game_phase_started",self, "_on_game_phase_start")
 	_game_manager.connect("round_ended",self, "_on_round_ended")
-	
+	_game_manager.connect("countdown_halfway_point", self,"_on_countdown_halfway_point")
 	_player_manager.level = _level
 	_game_manager.level = _level
 
@@ -35,20 +36,21 @@ func reset():
 	_game_manager.reset()
 	_level.reset()
 
-func _on_prep_phase_end( _round_index: int) ->void:
-	#TODO: change this when ghosts to replace are pickable after round 3
-	#for now we always replace the last ghost after we hit max ghost count
-	var ghost_index = min(_round_index-1,Constants.get_value("ghosts", "max_amount"))
-	var ghost_indices = {}
+func _on_round_started(round_index):
+	var default_ghost_index = min(round_index-1,Constants.get_value("ghosts", "max_amount"))
 	for player_id in _player_manager.players:
-		ghost_indices[player_id] = ghost_index
-	_player_manager.restart_ghosts(ghost_indices)
-	_player_manager.enable_ghosts(ghost_indices)
-	_player_manager.start_recording(ghost_indices)
-	#TODO: change this to use client input
+		_player_manager.set_ghost_index(player_id, default_ghost_index)
+
+func _on_game_phase_start(round_index: int) ->void:
+	_player_manager.restart_ghosts()
+	_player_manager.enable_ghosts()
+	_player_manager.start_recording()
 	for player_id in _player_manager.players:
-		_player_manager.move_player_to_spawnpoint(player_id, ghost_index)
+		_player_manager.move_player_to_spawnpoint(player_id)
 	_player_manager.set_players_can_move(true)
+
+func _on_countdown_halfway_point():
+	_player_manager.propagate_player_picks()
 
 func _on_round_ended(_round_index: int) -> void:
 	_player_manager.stop_recording()
@@ -100,6 +102,12 @@ func update_dash_state(player_id, dash_state):
 func handle_player_action(player_id, action_state):
 	_player_manager.handle_player_action(player_id, action_state)
 
+func handle_ghost_pick(player_id, ghost_index):
+	if not _game_manager._before_second_half_of_countdown:
+		Logger.error("Received ghost picks outside proper phase", "ghost_picking")
+		return
+	_player_manager.set_ghost_index(player_id, ghost_index)
+	
 
 func get_players():
 	return _player_manager.players

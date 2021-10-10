@@ -3,11 +3,12 @@ class_name GameManager
 
 # Round started signal
 # Includes the index of the round and a latency delay
-signal round_started(round_index, latency_delay)
+signal round_started(round_index)
 
-# Preperation phase ended signal
+signal countdown_halfway_point
+# Game phase started signal
 # Includes the round index
-signal prep_phase_ended(round_index)
+signal game_phase_started(round_index)
 
 # Round ended signal
 # Inculdes the round index
@@ -28,6 +29,9 @@ onready var _latency_delay: float = Constants.get_value("gameplay", "latency_del
 # The length of the preperation phase
 onready var _prep_phase_time: float = Constants.get_value("gameplay", "prep_phase_time")
 
+# The length of the countdown phase
+onready var _countdown_phase_time: int = Constants.get_value("gameplay", "countdown_phase_seconds")
+
 # The length of one round
 onready var _game_phase_length: float = Constants.get_value("gameplay", "game_phase_time")
 
@@ -38,8 +42,10 @@ var _round_index: int = 0
 var _round_timer: float = 0.0
 
 var _round_in_progress: bool = false
+var _before_second_half_of_countdown: bool = true
 
 
+var countdown_halfway_point_reached: bool = false
 var game_phase_in_progress: bool = false
 
 func _ready():
@@ -51,6 +57,8 @@ func reset():
 	_round_timer = 0.0
 	_round_in_progress = false
 	game_phase_in_progress = false
+	countdown_halfway_point_reached = false
+	_before_second_half_of_countdown = true
 	for i in range(level.get_capture_points().size()):
 		level.get_capture_points()[i].disconnect("capture_status_changed", self, "_on_capture_status_changed")
 		level.get_capture_points()[i].disconnect("captured", self, "_on_captured")
@@ -66,23 +74,36 @@ func _process(delta):
 	
 	_round_timer += delta
 
-	var time_to_game_phase: float = _prep_phase_time + _latency_delay
+	var time_to_game_phase: float =  _prep_phase_time + _latency_delay
 	
 	# Pre-Game-Phase -> Do nothing
 	if _round_timer < time_to_game_phase:
 		return
 	
+	# Wait for half the countdown time
+	if _round_timer < time_to_game_phase + float(_countdown_phase_time)*0.5:
+		return
+	
+	# Halfway through the countdown send picks to clients
+	if _round_timer<time_to_game_phase + _countdown_phase_time and not countdown_halfway_point_reached:
+		_before_second_half_of_countdown = false
+		countdown_halfway_point_reached = true
+		_countdown_halfway_done()
+		return
+	
 	# Game-Phase Start
-	if _round_timer >= time_to_game_phase and not game_phase_in_progress:
+	if _round_timer >= time_to_game_phase +_countdown_phase_time and not game_phase_in_progress:
 		game_phase_in_progress = true
-		_on_prep_phase_end()
+		_game_phase_start()
 		return
 	
 	# Game-Phase/Round End
-	if _round_timer >= time_to_game_phase + _game_phase_length and game_phase_in_progress:
+	if _round_timer >= time_to_game_phase +_countdown_phase_time + _game_phase_length and game_phase_in_progress:
 		game_phase_in_progress = false
+		countdown_halfway_point_reached = false
 		_on_round_end()
 		_round_timer = 0
+		_before_second_half_of_countdown = true
 
 
 # Called when the room is full
@@ -124,15 +145,18 @@ func _check_for_win():
 # Called when the round starts
 func _on_round_start():
 	Logger.info("Round " + str(_round_index) + " started", "gameplay")
-	emit_signal("round_started", _round_index, _latency_delay)
+	emit_signal("round_started", _round_index)
 	
 # Called when the preperation phase ends
-func _on_prep_phase_end():
-	Logger.info("Prep Phase "+ str(_round_index) + " ended", "gameplay")
+func _game_phase_start():
+	Logger.info("Game Phase "+ str(_round_index) + " started", "gameplay")
 	level.toggle_capture_points(true)
-	emit_signal("prep_phase_ended", _round_index)
+	emit_signal("game_phase_started", _round_index)
 
-# Called when the round ends
+func _countdown_halfway_done():
+	Logger.info("Countdown halfway done", "gameplay")	
+	emit_signal("countdown_halfway_point")
+	
 func _on_round_end():
 	Logger.info("Round " + str(_round_index) + " ended", "gameplay")
 	level.reset()
