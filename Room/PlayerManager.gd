@@ -182,6 +182,8 @@ func _physics_process(delta):
 
 func _on_player_hit(hit_player_id):
 	Logger.info("Player hit!", "attacking")
+	move_player_to_spawnpoint(hit_player_id)
+	
 	for player_id in players:
 		Server.send_player_hit(player_id, hit_player_id)
 
