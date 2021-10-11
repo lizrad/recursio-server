@@ -116,7 +116,7 @@ func correct_illegal_movement():
 	if _collected_illegal_movement.length() > epsilon:
 		Logger.info(
 			"Correcting illegal movement of " + str(_collected_illegal_movement),
-			"movement validation"
+			"movement_validation"
 		)
 		#TODO: if collected_illegal_movement is too big kick bc player had to have cheated
 		transform.origin -= _collected_illegal_movement
