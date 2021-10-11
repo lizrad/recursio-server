@@ -160,7 +160,7 @@ func handle_player_action(player_id, action_state):
 
 
 func do_attack(attacker, action_type):
-	Actions.types_to_actions[action_type].set_active(true, attacker, get_tree())
+	Actions.types_to_actions[action_type].set_active(true, attacker, get_tree(), get_parent())
 	
 	# TODO: Consider how to generalize this
 	if "action_last_frame" in attacker:
