@@ -160,6 +160,9 @@ func handle_player_action(player_id, action_state):
 
 
 func do_attack(attacker, action_type):
+	if attacker.ghost_index == Constants.get_value("ghosts", "wall_placing_ghost_index"):
+		action_type = Enums.ActionType.WALL
+	
 	Actions.types_to_actions[action_type].set_active(true, attacker, get_tree(), get_parent())
 	
 	# TODO: Consider how to generalize this
