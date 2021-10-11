@@ -128,7 +128,7 @@ func correct_illegal_movement():
 func update_dash_state(dash_state):
 	if dash_state["S"] == 1:
 		if _valid_dash_start_time(dash_state["T"]):
-			Logger.info("Dash received", "movement validation")
+			Logger.info("Dash received", "movement_validation")
 			_dashing = true
 			dash_activation_timer.start()
 			#reset collection of illegal movement if we get confirmation of dash
@@ -141,7 +141,7 @@ func update_dash_state(dash_state):
 					i -= 1
 				gameplay_record["F"][i]["D"] = Enums.DashFrame.START
 		else:
-			Logger.info("Illegal dash", "movement validation")
+			Logger.info("Illegal dash", "movement_validation")
 	#TODO: this does not work correctly as the client only sends dash_state 0 a long time after it actually has ended
 	else:
 		if _recording:
@@ -200,7 +200,7 @@ func _validate_position(player_state, physics_delta):
 	var max_dash_speed := 22.5
 	#illegal movement regardless of wether player is dashing or not
 	if current_velocity.length() > max_dash_speed:
-		#Logger.debug("Velocity bigger than max_dash_speed","movement validation")
+		#Logger.debug("Velocity bigger than max_dash_speed","movement_validation")
 		var normalized_velocity = current_velocity.normalized()
 		var illegal_velocity_length = current_velocity.length() - max_dash_speed
 		_collected_illegal_movement += (normalized_velocity * illegal_velocity_length) * delta
@@ -215,7 +215,7 @@ func _validate_position(player_state, physics_delta):
 		if _waiting_for_dash:
 			var normalized_velocity = current_velocity.normalized()
 			var illegal_velocity_length = current_velocity.length() - max_normal_speed
-			Logger.debug("Adding to illegal movement", "movement validation")
+			Logger.debug("Adding to illegal movement", "movement_validation")
 			_collected_illegal_movement_if_not_dashing += (
 				normalized_velocity
 				* illegal_velocity_length
@@ -224,7 +224,7 @@ func _validate_position(player_state, physics_delta):
 
 
 func _on_dash_activation_timeout():
-	Logger.info("Turn off dashing", "movement validation")
+	Logger.info("Turn off dashing", "movement_validation")
 	_dashing = false
 
 

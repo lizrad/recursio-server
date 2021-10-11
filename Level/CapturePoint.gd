@@ -69,20 +69,20 @@ func _process(delta):
 func _capture(delta: float):
 	capture_progress = min(1, capture_progress + delta * _capture_speed)
 	if not _is_captured:
-		Logger.debug("Capture progress: " + str(capture_progress), "capture point")
+		Logger.debug("Capture progress: " + str(capture_progress), "capture_point")
 		emit_signal("capture_status_changed", capture_progress, capture_team)
 	if capture_progress == 1 and not _is_captured:
 		_is_captured = true
-		Logger.info("Point captured by " + str(capture_team), "capture point")
+		Logger.info("Point captured by " + str(capture_team), "capture_point")
 		emit_signal("captured", capture_team)
 
 
 func _recapture(delta: float):
 	if capture_progress > 0:
 		capture_progress = max(0, capture_progress - delta * _recapture_speed)
-		Logger.debug("Recapture progress: " + str(capture_progress), "capture point")
+		Logger.debug("Recapture progress: " + str(capture_progress), "capture_point")
 	else:
-		Logger.info("Capturing team changed to  " + str(_current_capture_team), "capture point")
+		Logger.info("Capturing team changed to  " + str(_current_capture_team), "capture_point")
 		_switch_capturing_teams(_current_capture_team)
 		emit_signal("capture_status_changed", capture_progress, capture_team)
 
@@ -92,9 +92,9 @@ func _release(delta: float):
 		if capture_progress == 1:
 			_is_captured = false
 			emit_signal("capture_lost", capture_team)
-			Logger.info("Point lost by " + str(capture_team), "capture point")
+			Logger.info("Point lost by " + str(capture_team), "capture_point")
 		capture_progress = max(0, capture_progress - delta * _release_speed)
-		Logger.debug("Release progress: " + str(capture_progress), "capture point")
+		Logger.debug("Release progress: " + str(capture_progress), "capture_point")
 		emit_signal("capture_status_changed", capture_progress, capture_team)
 	elif capture_team != -1:
 		# Process reached zero with no team currently capturing
