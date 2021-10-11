@@ -87,10 +87,14 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Logger="*res://Shared/Logger.gd"
+Logger="*res://addons/recursio-loggerplugin/Logger.gd"
 Constants="*res://Shared/Constants.gd"
 Enums="*res://Shared/Enums.gd"
 Actions="*res://Shared/Attacks/Actions.gd"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/recursio-loggerplugin/plugin.cfg" )
 
 [global]
 
