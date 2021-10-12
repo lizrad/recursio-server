@@ -90,6 +90,7 @@ func _on_world_state_update(world_state, room_id) -> void:
 func _on_round_start(round_index, room_id):
 	var room: Room = _room_dic[room_id]
 	for player_id in room.get_players().keys():
+		room.get_players()[player_id].round_index = round_index
 		_server.send_round_start_to_client(player_id, round_index)
 
 

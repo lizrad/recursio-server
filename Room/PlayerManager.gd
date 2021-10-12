@@ -9,6 +9,10 @@ var ghosts = {}
 var player_states = {}
 
 var level
+
+onready var _game_manager = get_node("../GameManager")
+
+
 func reset():
 	stop_recording()
 	for player_id in ghosts:
@@ -123,6 +127,7 @@ func _create_ghost_from_player(player)->void:
 	ghost.spawn_point = player.spawn_point
 	ghost.game_id = player.game_id
 	ghost.player_id = player.player_id
+	ghost.round_index = _game_manager.round_index
 
 	if  ghosts[player.player_id].has([player.gameplay_record["G"]]):
 		ghosts[player.player_id][player.gameplay_record["G"]].queue_free()

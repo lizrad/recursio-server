@@ -36,7 +36,7 @@ onready var _countdown_phase_time: int = Constants.get_value("gameplay", "countd
 onready var _game_phase_length: float = Constants.get_value("gameplay", "game_phase_time")
 
 # The index of the current round
-var _round_index: int = 0
+var round_index: int = 0
 
 
 var _round_timer: float = 0.0
@@ -53,7 +53,7 @@ func _ready():
 
 
 func reset():
-	_round_index = 0
+	round_index = 0
 	_round_timer = 0.0
 	_round_in_progress = false
 	game_phase_in_progress = false
@@ -69,7 +69,7 @@ func reset():
 # Game-State behavior 
 func _process(delta):
 	if _round_timer == 0:
-		_round_index += 1
+		round_index += 1
 		_on_round_start()
 	
 	_round_timer += delta
@@ -144,20 +144,20 @@ func _check_for_win():
 	
 # Called when the round starts
 func _on_round_start():
-	Logger.info("Round " + str(_round_index) + " started", "gameplay")
-	emit_signal("round_started", _round_index)
+	Logger.info("Round " + str(round_index) + " started", "gameplay")
+	emit_signal("round_started", round_index)
 	
 # Called when the preperation phase ends
 func _game_phase_start():
-	Logger.info("Game Phase "+ str(_round_index) + " started", "gameplay")
+	Logger.info("Game Phase "+ str(round_index) + " started", "gameplay")
 	level.toggle_capture_points(true)
-	emit_signal("game_phase_started", _round_index)
+	emit_signal("game_phase_started", round_index)
 
 func _countdown_halfway_done():
 	Logger.info("Countdown halfway done", "gameplay")	
 	emit_signal("countdown_halfway_point")
 	
 func _on_round_end():
-	Logger.info("Round " + str(_round_index) + " ended", "gameplay")
+	Logger.info("Round " + str(round_index) + " ended", "gameplay")
 	level.reset()
-	emit_signal("round_ended", _round_index)
+	emit_signal("round_ended", round_index)
