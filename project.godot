@@ -12,7 +12,7 @@ _global_script_classes=[ {
 "base": "Resource",
 "class": "Action",
 "language": "GDScript",
-"path": "res://Shared/Attacks/Action.gd"
+"path": "res://Shared/Actions/Action.gd"
 }, {
 "base": "Spatial",
 "class": "CapturePoint",
@@ -89,8 +89,7 @@ config/icon="res://icon.png"
 
 Logger="*res://addons/recursio-loggerplugin/Logger.gd"
 Constants="*res://Shared/Constants.gd"
-Enums="*res://Shared/Enums.gd"
-Actions="*res://Shared/Attacks/Actions.gd"
+ActionManager="*res://Shared/Actions/ActionManager.gd"
 
 [editor_plugins]
 

@@ -1,6 +1,8 @@
 extends Node
 class_name RoomManager
 
+# Creates and removes rooms, and mediates between Server requests and specific rooms.
+
 var room_count: int = 0
 
 var _room_scene = preload("res://Room/Room.tscn")

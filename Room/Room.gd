@@ -1,6 +1,8 @@
 extends Viewport
 class_name Room
 
+# Connects all the specific managers together
+
 signal world_state_updated(world_state, id)
 signal room_filled()
 

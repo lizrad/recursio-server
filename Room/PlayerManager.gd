@@ -159,16 +159,12 @@ func handle_player_action(player_id, action_state):
 	do_attack(players[player_id], action_state["A"])
 
 
-func do_attack(attacker, action_type):
-	if attacker.ghost_index == Constants.get_value("ghosts", "wall_placing_ghost_index"):
-		action_type = Enums.ActionType.WALL
+func do_attack(attacker, trigger):
+	var action = ActionManager.get_action_for_trigger(trigger, attacker.ghost_index)
+	ActionManager.set_active(action, true, attacker, get_parent())
 	
-	Actions.types_to_actions[action_type].set_active(true, attacker, get_tree(), get_parent())
-	
-	# TODO: Consider how to generalize this
 	if "action_last_frame" in attacker:
-		if action_type == Enums.ActionType.SHOOT:
-			attacker.action_last_frame = Enums.AttackFrame.SHOOT_START
+		attacker.action_last_frame = trigger
 
 
 func update_dash_state(player_id, dash_state):
