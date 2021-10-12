@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Room/PlayerManager.gd" type="Script" id=1]
 [ext_resource path="res://Room/WorldStateManager.gd" type="Script" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://Room/GameManager.gd" type="Script" id=4]
 [ext_resource path="res://Level/CapturePoint.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Shared/Level/LevelH.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Shared/Actions/ActionManager.gd" type="Script" id=7]
 
 [sub_resource type="Environment" id=1]
 background_mode = 1
@@ -19,6 +20,9 @@ own_world = true
 world = SubResource( 2 )
 render_target_update_mode = 3
 script = ExtResource( 3 )
+
+[node name="ActionManager" type="Node" parent="."]
+script = ExtResource( 7 )
 
 [node name="PlayerManager" type="Node" parent="."]
 script = ExtResource( 1 )

@@ -19,10 +19,12 @@ var _dashing := false
 var wait_for_player_to_correct = 0
 
 var _recording = false
-var action_last_frame = ActionManager.Trigger.NONE
+var action_last_frame
 var gameplay_record = {}
 
 var can_move: bool = false
+
+var action_manager
 
 
 func reset():
@@ -51,9 +53,9 @@ func start_recording():
 	#index of the ghost
 	gameplay_record["G"] = ghost_index
 	#TODO: connect weapon information recording with actuall weapon system when ready
-	gameplay_record["W"] = ActionManager.ActionType.HITSCAN \
+	gameplay_record["W"] = action_manager.ActionType.HITSCAN \
 			if ghost_index != Constants.get_value("ghosts", "wall_placing_ghost_index") \
-			else ActionManager.ActionType.WALL
+			else action_manager.ActionType.WALL
 	#array of gameplay data per frame
 	gameplay_record["F"] = []
 
@@ -61,12 +63,14 @@ func stop_recording():
 	_recording = false
 
 
-func _create_record_frame(time, position, rotation, attack = ActionManager.Trigger.NONE, dash = ActionManager.Trigger.NONE) -> Dictionary:
+func _create_record_frame(time, position, rotation, attack = action_manager.Trigger.NONE, dash = action_manager.Trigger.NONE) -> Dictionary:
 	var frame = {"T": time, "P": position, "R": rotation, "A": attack, "D": dash}
 	return frame
 
 
 func _ready():
+	action_last_frame = action_manager.Trigger.NONE
+	
 	for i in range(dash_charges):
 		dash_start_times.append(-1)
 	dash_confirmation_timer.connect("timeout", self, "_on_dash_confirmation_timeout")
@@ -107,7 +111,7 @@ func apply_player_state(player_state, physics_delta):
 		gameplay_record["F"].append(
 			_create_record_frame(Server.get_server_time(), transform.origin, rotation.y, action_last_frame)
 		)
-		action_last_frame = ActionManager.Trigger.NONE
+		action_last_frame = action_manager.Trigger.NONE
 
 	last_player_state = player_state
 
@@ -141,7 +145,7 @@ func update_dash_state(dash_state):
 				var i = max(0,gameplay_record["F"].size() - 1)
 				while gameplay_record["F"][i]["T"] > dash_state["T"] && i >= 0:
 					i -= 1
-				gameplay_record["F"][i]["D"] = ActionManager.Trigger.SPECIAL_MOVEMENT_START
+				gameplay_record["F"][i]["D"] = action_manager.Trigger.SPECIAL_MOVEMENT_START
 		else:
 			Logger.info("Illegal dash", "movement_validation")
 	#TODO: this does not work correctly as the client only sends dash_state 0 a long time after it actually has ended
@@ -150,7 +154,7 @@ func update_dash_state(dash_state):
 			var i = gameplay_record["F"].size() - 1
 			while gameplay_record["F"][i]["T"] > dash_state["T"] && i >= 0:
 				i -= 1
-			gameplay_record["F"][i]["D"] = ActionManager.Trigger.SPECIAL_MOVEMENT_END
+			gameplay_record["F"][i]["D"] = action_manager.Trigger.SPECIAL_MOVEMENT_END
 
 
 func _valid_dash_start_time(time):

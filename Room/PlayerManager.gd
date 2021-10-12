@@ -11,6 +11,7 @@ var player_states = {}
 var level
 
 onready var _game_manager = get_node("../GameManager")
+onready var _action_manager = get_node("../ActionManager")
 
 
 func reset():
@@ -52,6 +53,7 @@ func spawn_player(player_id, game_id):
 	player.game_id = game_id
 	player.player_id = player_id
 	player.ghost_index = 0
+	player.action_manager = _action_manager
 	ghosts[player_id] = {}
 	add_child(player)
 	player.connect("hit", self, "_on_player_hit", [player_id])
@@ -99,6 +101,7 @@ func enable_ghosts() ->void:
 
 func add_ghost(ghost):
 	add_child(ghost)
+	ghost.action_manager = _action_manager
 	ghost.connect("hit", self, "_on_ghost_hit", [ghost.ghost_index, ghost.player_id])
 	ghost.connect("ghost_attack", self, "do_attack")
 
@@ -166,13 +169,13 @@ func handle_player_action(player_id, action_state):
 	for any_player_id in players:
 		if any_player_id != player_id:
 			# Player is another player
-			var action_type = ActionManager.get_action_type_for_trigger(action_state["A"], players[player_id].ghost_index)
+			var action_type = _action_manager.get_action_type_for_trigger(action_state["A"], players[player_id].ghost_index)
 			Server.send_player_action(any_player_id, player_id, action_type)
 
 
 func do_attack(attacker, trigger):
-	var action = ActionManager.get_action_for_trigger(trigger, attacker.ghost_index)
-	ActionManager.set_active(action, true, attacker, get_parent())
+	var action = _action_manager.get_action_for_trigger(trigger, attacker.ghost_index)
+	_action_manager.set_active(action, true, attacker, get_parent())
 	
 	if "action_last_frame" in attacker:
 		attacker.action_last_frame = trigger

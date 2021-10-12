@@ -15,6 +15,7 @@ var player_count: int = 0
 onready var _player_manager: PlayerManager = get_node("PlayerManager")
 onready var _world_state_manager: WorldStateManager = get_node("WorldStateManager")
 onready var _game_manager: GameManager = get_node("GameManager")
+onready var _action_manager: ActionManager = get_node("ActionManager")
 onready var _level = get_node("LevelH") # TODO: Should be configurable later
 
 #id dictionary -> translates network id to game id (0 or 1)

@@ -97,6 +97,8 @@ func _on_round_start(round_index, room_id):
 # Sends the round end event to all players in the room
 func _on_round_end(round_index, room_id):
 	var room: Room = _room_dic[room_id]
+	room.get_node("ActionManager").clear_action_instances()
+	
 	for player_id in room.get_players().keys():
 		_server.send_round_end_to_client(player_id, round_index)
 

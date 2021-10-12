@@ -14,6 +14,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Shared/Actions/Action.gd"
 }, {
+"base": "Node",
+"class": "ActionManager",
+"language": "GDScript",
+"path": "res://Shared/Actions/ActionManager.gd"
+}, {
 "base": "Spatial",
 "class": "CapturePoint",
 "language": "GDScript",
@@ -66,6 +71,7 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "Action": "",
+"ActionManager": "",
 "CapturePoint": "",
 "CharacterBase": "",
 "GameManager": "",
@@ -89,7 +95,6 @@ config/icon="res://icon.png"
 
 Logger="*res://addons/recursio-loggerplugin/Logger.gd"
 Constants="*res://Shared/Constants.gd"
-ActionManager="*res://Shared/Actions/ActionManager.gd"
 
 [editor_plugins]
 
