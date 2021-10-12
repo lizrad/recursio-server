@@ -157,6 +157,12 @@ func handle_player_action(player_id, action_state):
 	# {"A": Constants.ActionType, "T": Server.get_server_time()}
 	Logger.info("Handling action of type " + str(action_state["A"]))
 	do_attack(players[player_id], action_state["A"])
+	
+	for any_player_id in players:
+		if any_player_id != player_id:
+			# Player is another player
+			var action_type = ActionManager.get_action_type_for_trigger(action_state["A"], players[player_id].ghost_index)
+			Server.send_player_action(any_player_id, player_id, action_type)
 
 
 func do_attack(attacker, trigger):

@@ -86,6 +86,11 @@ func send_capture_point_capture_lost(player_id, capturing_player_id, capture_poi
 	rpc_id(player_id, "receive_capture_point_capture_lost", capturing_player_id, capture_point )
 
 
+func send_player_action(player_id, action_player_id, action_type):
+	Logger.info("Sending capture point capture lost to client", "connection")
+	rpc_id(player_id, "receive_player_action", action_player_id, action_type)
+
+
 remote func determine_latency(player_time):
 	var player_id = get_tree().get_rpc_sender_id()
 	rpc_id(player_id, "receive_latency", player_time)
