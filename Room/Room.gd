@@ -35,6 +35,7 @@ func _ready():
 
 func reset():
 	Logger.info("Full reset triggered.","gameplay")
+	_action_manager.clear_action_instances()
 	_player_manager.reset()
 	_game_manager.reset()
 	_level.reset()
